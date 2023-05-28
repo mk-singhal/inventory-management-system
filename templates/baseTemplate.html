@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>IMS</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/baseTemplate.css' %}">
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.min.css">
+
+    <!-- Font Awesome JS -->
+    <script src="https://kit.fontawesome.com/342a6423c4.js" crossorigin="anonymous"></script>
+    <!-- <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/solid.js" integrity="sha384-tzzSw1/Vo+0N5UhStP3bvwWPq+uvzCMfrN1fEFe+xBmv1C/AtVX5K0uZtmcHitFZ" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.13/js/fontawesome.js" integrity="sha384-6OIrr52G08NpOFSZdxxz1xdNSndlD4vdcf/q2myIUVO0VsqaGHJsB0RaBE01VTOY" crossorigin="anonymous"></script> -->
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    
+    <!-- Sidebar  -->
+    <nav id="sidebar">
+      <div class="sidebar-header">
+          <h3 class="mb-0">Company</h3>
+      </div>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="p-1">
+          <a href="#" class="nav-link active" aria-current="page">
+            <i class="fa-solid fa-house mx-1" style="color: #ffffff;"></i>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="p-1">
+          <a href="#" class="nav-link link-body-emphasis">
+            <i class="fa-solid fa-warehouse fa-sm mx-1" style="color: #ffffff;"></i>
+            <span>Inventory</span>
+          </a>
+        </li>
+        <li class="p-1">
+          <a href="#" class="nav-link link-body-emphasis">
+            <i class="fa-solid fa-sack-dollar mx-1" style="color: #ffffff;"></i>
+            <span>Sell</span>
+          </a>
+        </li>
+        <li class="p-1">
+          <a href="#" class="nav-link link-body-emphasis">
+            <i class="fa-solid fa-cubes mx-1" style="color: #ffffff;"></i>
+            <span>Purchase</span>
+          </a>
+        </li>
+        <li class="p-1">
+          <a href="#" class="nav-link link-body-emphasis">
+            <i class="fa-solid fa-users fa-sm mx-1" style="color: #ffffff;"></i>
+            <span>Customers</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- Sidebar Ends -->
+
+    <!-- Side-Page Content  -->
+    <div id="content" class="p-0" style="overflow-x:auto;">
+          
+      <!-- Top Navigation Bar -->
+      <nav class="navbar bg-body-tertiary">
+        <div class="container-fluid">
+          
+          <!-- Sidebar Toggler -->
+          <button type="button" id="sidebarCollapse" class="btn btn-dark">
+            <i class="fas fa-align-left"></i>
+            <span>Toggle Sidebar</span>
+          </button>
+          <!-- Sidebar Toggler Ends -->
+          
+          <!-- Profile -->
+          {% if not user.is_authenticated %}
+          <a class="btn btn-secondary" href="/signin" role="button">Login</a>
+          {% else %}
+          <div class="d-flex">
+            <p class="text-capitalize fw-normal text-dark my-auto pt-1 me-2">{{ user.username }}</p>
+            <div class="dropdown me-4">
+              <a href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img
+                    src="{{ user.profile.profile_pic.url }}"
+                    class="rounded-circle"
+                    height="35px"
+                    alt="Black and White Portrait of a Man"
+                    loading="lazy"
+                />
+              </a>
+              <ul class="dropdown-menu" style="left: -122px;">
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><a class="dropdown-item" href="/signout">Logout</a></li>
+              </ul>
+            </div>
+          </div>
+          {% endif %}
+          <!-- Proflie Ends -->
+
+        </div>
+      </nav>
+      <!-- Top Navigation Bar Ends -->
+
+      <!-- Page Content Starts -->
+      <div class="main-class px-3 py-4">
+        <div class="container-fluid">
+          
+          {% if not user.is_authenticated %}
+          
+            <div class="text-center my-3">
+              {% comment %} <i class="bi bi-exclamation-octagon-fill"></i> {% endcomment %}
+              <i class="fa-solid fa-triangle-exclamation fa-2xl mb-2" style="color: #3c3c3c;min-height:55px;"></i>
+              {% comment %} <img class="d-block mx-auto mb-4" src="{% static 'img/default.png' %}" alt="" width="72" height="65"> {% endcomment %}
+              <h1 class="display-5 text-body-emphasis" style="font-weight: 500;">Please, Login to continue !!</h1>
+              <div class="col-lg-6 mx-auto my-3">
+                {% comment %} <p class="lead mb-4">Quickly design and customize responsive mobile-first sites with Bootstrap, the world’s most popular front-end open source toolkit, featuring Sass variables and mixins, responsive grid system, extensive prebuilt components, and powerful JavaScript plugins.</p> {% endcomment %}
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                  <a class="btn btn-primary btn-lg" href="/signin" role="button">Login</a>
+                  {% comment %} <button type="button" class="btn btn-outline-secondary btn-lg px-4">Secondary</button> {% endcomment %}
+                </div>
+              </div>
+            </div>
+          {% else %}
+          
+          {% block content %}
+          {% endblock %}
+          
+          {% endif %}
+
+        </div>
+      </div>
+      <!-- Side-Page Content Ends -->
+      
+    </div>
+    <!-- Page Content Ends -->
+  
+  </div>
+  <!-- Wrapper Ends -->
+
+  <!-- jQuery CDN - Slim version (=without AJAX) -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <!-- Popper.JS -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script> -->
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+  <!-- jQuery Custom Scroller CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+  
+  <script src="{% static 'js/baseTemplate.js' %}"></script>
+   
+</body>
+
+</html>
