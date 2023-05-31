@@ -16,8 +16,8 @@ def signin(request):
         if user is not None:
             login(request, user)
             # return HttpResponse()
-            fname = user.first_name
-            email = user.email
+            # fname = user.first_name
+            # email = user.email
             # return render(request, "sr/home.html", {'fname':fname, 'email':email})
             return redirect('home:home')
         else:

@@ -9,7 +9,7 @@ class Profile(models.Model):
         ('staff', 'STAFF'),
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    profile_pic = models.ImageField(default='default.png', upload_to='profiles_pics')
+    profile_pic = models.ImageField(default='defaultUser.png', upload_to='profiles_pics')
     status = models.CharField(max_length=9, choices=STATUS_CHOICES, default='staff')
 
     def __str__(self):  # __unicode__ for Python 2

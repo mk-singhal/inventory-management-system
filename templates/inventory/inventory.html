@@ -1,0 +1,187 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  {% load static %}
+  {% load divide %}
+  {% load sub %}
+  {% load remainder %}
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 fw-bolder">Inventory</h1>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+      {% comment %} <button type="button" class="ms-2 btn btn-outline-secondary" disabled>{{ user.profile.status }}</button> {% endcomment %}
+    </div>
+  </div>
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    {% comment %} <div class="input-group my-2"> {% endcomment %}
+      <input type="text" style="max-width:37%;" class="justify-content-start form-control" placeholder="Search Products" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <div class="d-sm-flex" id="changeDisp">
+        <a href="{% url 'inventory:add-product' %}" class="btn btn-success me-3">Add Item</a>
+        <button id="btnCard" class="border border-end-0 rounded-start" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="20" fill="#505050" class="bi bi-grid-3x3" viewBox="0 0 16 16">
+            <path d="M0 1.5A1.5 1.5 0 0 1 1.5 0h13A1.5 1.5 0 0 1 16 1.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 14.5v-13zM1.5 1a.5.5 0 0 0-.5.5V5h4V1H1.5zM5 6H1v4h4V6zm1 4h4V6H6v4zm-1 1H1v3.5a.5.5 0 0 0 .5.5H5v-4zm1 0v4h4v-4H6zm5 0v4h3.5a.5.5 0 0 0 .5-.5V11h-4zm0-1h4V6h-4v4zm0-5h4V1.5a.5.5 0 0 0-.5-.5H11v4zm-1 0V1H6v4h4z"/>
+          </svg>
+        </button>
+        <button id="btnTable" class="border rounded-end bg-transparent" type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#505050" class="bi bi-list-task" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2 2.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5V3a.5.5 0 0 0-.5-.5H2zM3 3H2v1h1V3z"/>
+            <path d="M5 3.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zM5.5 7a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9zm0 4a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1h-9z"/>
+            <path fill-rule="evenodd" d="M1.5 7a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V7zM2 7h1v1H2V7zm0 3.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5H2zm1 .5H2v1h1v-1z"/>
+          </svg>
+        </button>
+      </div>
+    {% comment %} </div> {% endcomment %}
+  </div>
+
+  <!-- Display:Tile/Card -->
+  <div id="dispCard" class="row">
+    {% for p in products %}
+    <div class="col-xl-3 col-lg-4 col-md-6 mb-3" style="max-width:75%">
+      <div class="card text-black">
+        <div class="container mx-auto p-0">
+          <img 
+            src="{{ p.pic.url }}" 
+            class="mx-auto d-block" 
+            alt="{{ p.name }}" 
+            style="max-height:220px;max-width:220px;"
+            {% comment %} width="220px" {% endcomment %}
+          />
+          <div class="overlay">
+            <a href="{% url 'inventory:edit-product' p.id %}" class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="text-center mt-1">
+            <h4 class="card-title">
+              {{ p.name }}         <!--   -{{ p.id }}   -->
+            </h4>
+            <h5 class="text-primary mb-1 pb-3">
+              ₹{{ p.price }}
+            </h5>
+          </div>
+          <div class="text-center">
+            <div class="p-3 mx-n3 mb-2" style="background-color: #eff1f2;">
+              <h5 class="mb-0">
+                {{ p.qty_actual }} 
+                {{ p.measuring_unit_1 }}
+              </h5>
+              {% comment %} {% if p.measuring_unit_2 != none %}
+                <hr class="m-1">
+                <h5 class="mb-0"> 
+                  {{ p.qty_actual|divide:p.measuring_unit_relation }} 
+                  {{ p.measuring_unit_2 }}
+                  {% if p.qty_actual|remainder:p.measuring_unit_relation %}
+                    {{ p.qty_actual|remainder:p.measuring_unit_relation }}
+                    {{ p.measuring_unit_1 }}
+                  {% endif %}
+                </h5>
+              {% endif %} {% endcomment %}
+            </div>
+            <h7 class="fw-normal">
+              {% if p.qty_actual > p.qty_billed %} 
+                a surplus of 
+                <h7 class="fw-bold text-success"> 
+                  {{ p.qty_actual|sub:p.qty_billed }} 
+                  {{ p.measuring_unit_1 }}
+                </h7>
+              {% elif p.qty_actual < p.qty_billed %} 
+                a deficit of 
+                <h7 class="fw-bold text-danger">
+                  {{ p.qty_billed|sub:p.qty_actual }} 
+                  {{ p.measuring_unit_1 }}
+                </h7>
+              {% endif %} 
+            </h7> 
+            {% comment %} <h7 class="fw-bold text-success">
+              +900 pcs
+            <h7/> {% endcomment %}
+          </div>
+        </div>
+      </div>
+    </div> 
+    {% endfor %}
+  </div>
+
+  <!-- Display:Table/List -->
+  <table id="dispTable" class="table d-none">
+    <thead class="sticky-top">
+      <tr>
+        <th scope="col">Img</th>
+        <th scope="col">Name</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity</th>
+        {% comment %} <th scope="col">Cost Price
+          <a href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+              <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+              <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+            </svg>
+          </a>
+        </th> {% endcomment %}
+        <th scope="col">HSN</th>
+        <th scope="col">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <th scope="row"><img src="{{ p.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ p.name }}"/></th>
+        <td>{{ p.name }}</td>
+        <td>₹{{ p.price }}</td>
+        <td>
+          <h7 class='fw-bold'>{{ p.qty_actual }}</h7>
+          {{ p.measuring_unit_1 }}
+          {% comment %} {% if p.measuring_unit_2 != none %}
+          <br>
+            <h7 class="fw-bold mb-0"> 
+              {{ p.qty_actual|divide:p.measuring_unit_relation }} 
+            </h7>
+            {{ p.measuring_unit_2 }}
+            {% if p.qty_actual|remainder:p.measuring_unit_relation %}
+            <h7 class="fw-bold mb-0"> 
+              {{ p.qty_actual|remainder:p.measuring_unit_relation }}
+            </h7>
+            {{ p.measuring_unit_1 }}
+            {% endif %}
+            </h7>
+          {% endif %} {% endcomment %}
+          <br>
+          {% if p.qty_actual > p.qty_billed %} 
+            surplus of 
+            <h7 class="fw-bold text-success"> 
+              {{ p.qty_actual|sub:p.qty_billed }} 
+              {{ p.measuring_unit_1 }}
+            </h7>
+          {% elif p.qty_actual < p.qty_billed %} 
+            deficit of 
+            <h7 class="fw-bold text-danger">
+              {{ p.qty_billed|sub:p.qty_actual }} 
+              {{ p.measuring_unit_1 }}
+            </h7>
+          {% endif %}
+          {% comment %} +500 pcs surplus {% endcomment %}
+        </td>
+        {% comment %} <td style="display:none;" id="profit">₹2</td> {% endcomment %}
+        <td>{{ p.hsn_code }}</td>
+        <td>
+          <a href="{% url 'inventory:edit-product' p.id %}" class="btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}

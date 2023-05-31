@@ -6,7 +6,7 @@
     <h1 class="h3 mb-0 fw-bolder">Dashboard</h1>
     <div class="d-flex">
       <p class="text-dark fw-normal my-auto me-2">Status: </p>
-      <p class="border border-1 text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
       {% comment %} <button type="button" class="ms-2 btn btn-outline-secondary" disabled>{{ user.profile.status }}</button> {% endcomment %}
     </div>
   </div>
@@ -25,7 +25,10 @@
                           <div class="h5 mb-0 fw-bold text-gray-800">₹40,000</div>
                       </div>
                       <div class="col-auto">
-                          <i class="fas fa-calendar fa-2x text-gray-300" style="color:#007bff;"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#0D6EFD" class="bi bi-cash-stack" viewBox="0 0 16 16">
+                            <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                            <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"/>
+                          </svg>
                       </div>
                   </div>
               </div>
@@ -43,7 +46,10 @@
                           <div class="h5 mb-0 fw-bold text-gray-800">₹215,000</div>
                       </div>
                       <div class="col-auto">
-                          <i class="fas fa-dollar-sign fa-2xl text-gray-300" style="color:#28a745;"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#28a745" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+                          <path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zM11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1h-1z"/>
+                          <path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293 2.354.646zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118l.137-.274z"/>
+                        </svg>
                       </div>
                   </div>
               </div>
@@ -61,7 +67,9 @@
                               <div class="h5 mb-0 fw-bold text-gray-800">₹215,000</div>
                           </div>
                       <div class="col-auto">
-                          <i class="fas fa-clipboard-list fa-2x text-gray-300" style="color:#17a2b8;"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#17a2b8" class="bi bi-bank" viewBox="0 0 16 16">
+                            <path d="m8 0 6.61 3h.89a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5H15v7a.5.5 0 0 1 .485.38l.5 2a.498.498 0 0 1-.485.62H.5a.498.498 0 0 1-.485-.62l.5-2A.501.501 0 0 1 1 13V6H.5a.5.5 0 0 1-.5-.5v-2A.5.5 0 0 1 .5 3h.89L8 0ZM3.777 3h8.447L8 1 3.777 3ZM2 6v7h1V6H2Zm2 0v7h2.5V6H4Zm3.5 0v7h1V6h-1Zm2 0v7H12V6H9.5ZM13 6v7h1V6h-1Zm2-1V4H1v1h14Zm-.39 9H1.39l-.25 1h13.72l-.25-1Z"/>
+                        </svg>
                       </div>
                   </div>
               </div>
@@ -79,7 +87,9 @@
                           <div class="h5 mb-0 fw-bold text-gray-800">₹40,000</div>
                       </div>
                       <div class="col-auto">
-                          <i class="fas fa-comments fa-2x text-gray-300" style="color:#ffc107;"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#ffc107" class="bi bi-question-octagon-fill" viewBox="0 0 16 16">
+                          <path d="M11.46.146A.5.5 0 0 0 11.107 0H4.893a.5.5 0 0 0-.353.146L.146 4.54A.5.5 0 0 0 0 4.893v6.214a.5.5 0 0 0 .146.353l4.394 4.394a.5.5 0 0 0 .353.146h6.214a.5.5 0 0 0 .353-.146l4.394-4.394a.5.5 0 0 0 .146-.353V4.893a.5.5 0 0 0-.146-.353L11.46.146zM5.496 6.033a.237.237 0 0 1-.24-.247C5.35 4.091 6.737 3.5 8.005 3.5c1.396 0 2.672.73 2.672 2.24 0 1.08-.635 1.594-1.244 2.057-.737.559-1.01.768-1.01 1.486v.105a.25.25 0 0 1-.25.25h-.81a.25.25 0 0 1-.25-.246l-.004-.217c-.038-.927.495-1.498 1.168-1.987.59-.444.965-.736.965-1.371 0-.825-.628-1.168-1.314-1.168-.803 0-1.253.478-1.342 1.134-.018.137-.128.25-.266.25h-.825zm2.325 6.443c-.584 0-1.009-.394-1.009-.927 0-.552.425-.94 1.01-.94.609 0 1.028.388 1.028.94 0 .533-.42.927-1.029.927z"/>
+                        </svg>
                       </div>
                   </div>
               </div>
