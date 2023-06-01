@@ -16,7 +16,17 @@
 
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     {% comment %} <div class="input-group my-2"> {% endcomment %}
-      <input type="text" style="max-width:37%;" class="justify-content-start form-control" placeholder="Search Products" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      {% comment %} <input type="text" style="max-width:37%;" class="justify-content-start form-control" placeholder="Search Products" aria-label="Recipient's username" aria-describedby="basic-addon2"> {% endcomment %}
+      <form style="min-width:30%;" action="{% url 'inventory:inventory' %}">
+        <div class="justify-content-start input-group mb-sm-auto mb-3" style="max-width:100%;">
+          <input type="text" class="form-control" placeholder="Search name or HSN code" aria-label="Search name or HSN code" name="search_product">
+          <button class="btn btn-outline-primary" type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+              <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+          </button>
+        </div>
+      </form>
       <div class="d-sm-flex" id="changeDisp">
         <a href="{% url 'inventory:add-product' %}" class="btn btn-success me-3">Add Item</a>
         <button id="btnCard" class="border border-end-0 rounded-start" type="button">
@@ -37,7 +47,7 @@
 
   <!-- Display:Tile/Card -->
   <div id="dispCard" class="row">
-    {% for p in products %}
+    {% for p in page_obj.object_list %}
     <div class="col-xl-3 col-lg-4 col-md-6 mb-3" style="max-width:75%">
       <div class="card text-black">
         <div class="container mx-auto p-0">
@@ -130,7 +140,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for p in products %}
+      {% for p in page_obj.object_list %}
       <tr>
         <th scope="row"><img src="{{ p.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ p.name }}"/></th>
         <td>{{ p.name }}</td>
@@ -182,6 +192,30 @@
       {% endfor %}
     </tbody>
   </table>
+
+  <nav aria-label="Page navigation example">
+    <ul class="pagination pagination-lg justify-content-center">
+      {%if page_obj.has_previous %}
+      <li class="page-item ">
+        <a href="?page={{page_obj.previous_page_number}}" class="page-link">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      {% endif %}
+      <li class="page-item"><a class="page-link active" href="#">{{page_obj.number}}</a></li>
+      {%if page_obj.has_next %}
+      <li class="page-item ">
+        <a href="?page={{page_obj.next_page_number}}" class="page-link">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
 
 
 {% endblock %}
