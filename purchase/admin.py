@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Seller, PurchaseOrder, PurchaseOrderDescription
+from .models import PurchaseOrder, PurchaseOrderDescription
 
 # Register your models here.
-admin.site.register([Seller, PurchaseOrder, PurchaseOrderDescription])
+admin.site.register([PurchaseOrder, PurchaseOrderDescription])

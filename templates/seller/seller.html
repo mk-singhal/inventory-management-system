@@ -1,0 +1,95 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  {% load static %}
+  {% load divide %}
+  {% load sub %}
+  {% load remainder %}
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <h1 class="h3 mb-0 fw-bolder">Seller</h1>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+    </div>
+  </div>
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-4">
+    <form style="min-width:30%;" action="{% url 'seller:seller' %}">
+      <div class="justify-content-start input-group mb-sm-auto mb-3" style="max-width:100%;">
+        <input type="text" class="form-control" placeholder="Search name" aria-label="Search name" name="search_seller">
+        <button class="btn btn-outline-primary" type="submit">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+    <div class="d-sm-flex" id="changeDisp">
+      <a href="{% url 'seller:add-seller' %}" class="btn btn-success">Add Seller</a>
+      {% comment %} <a href="{% url 'inventory:add-product' %}" class="btn btn-success">Create seller</a> {% endcomment %}
+    </div>
+  </div>
+
+  <!-- Display:Table/List -->
+  <table class="table">
+    <thead class="sticky-top">
+      <tr>
+        <th scope="col">Img</th>
+        <th scope="col">Name</th>
+        <th scope="col">GSTIN</th>
+        <th scope="col">Mobile Number</th>
+        <th scope="col">Address</th>
+        <th scope="col">Email</th>
+        <th scope="col">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in page_obj.object_list %}
+      <tr>
+        <th scope="row"><img src="{{ p.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ p.name }}"/></th>
+        <td>{{ p.name }}</td>
+        <td>{% if p.gstin %}{{ p.gstin }}{% else %}-{% endif %}</td>
+        <td>{% if p.mob_no %}{{ p.mob_no }}{% else %}-{% endif %}</td>
+        <td>{% if p.address %}{{ p.address }}{% else %}-{% endif %}</td>
+        <td>{% if p.email %}{{ p.email }}{% else %}-{% endif %}</td>
+        <td>
+          <a href="{% url 'seller:edit-seller' p.id %}" class="btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+              <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+              <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+            </svg>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if page_obj %}
+  <nav aria-label="Page navigation example">
+    <ul class="pagination pagination-lg justify-content-center">
+      {%if page_obj.has_previous %}
+      <li class="page-item ">
+        <a href="?page={{page_obj.previous_page_number}}" class="page-link">Previous</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Previous</a>
+      </li>
+      {% endif %}
+      <li class="page-item"><a class="page-link active" href="#">{{page_obj.number}}</a></li>
+      {%if page_obj.has_next %}
+      <li class="page-item ">
+        <a href="?page={{page_obj.next_page_number}}" class="page-link">Next</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <a class="page-link">Next</a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+    {% endif %}
+  
+  
+{% endblock %}
