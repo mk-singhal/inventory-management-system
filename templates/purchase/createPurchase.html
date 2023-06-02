@@ -1,0 +1,102 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <p class="h3 mb-0 fw-bolder">Add Item to Inventory</p>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+    </div>
+  </div>
+
+  <form enctype="multipart/form-data" action="" method="POST" class="row g-3 needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="col-md-4">
+      <label for="name-in" class="form-label">Name*</label>
+      <input type="text" class="form-control" id="name-in" name="name" autocomplete="on" required>
+    </div>
+    <div class="col-md-4">
+      <label for="hsn-in" class="form-label">HSN Code*</label>
+      <input type="number" class="form-control" id="hsn-in" name="hsn" required>
+    </div>
+    <div class="col-md-4">
+      <label for="gst-in" class="form-label">GST*</label>
+      <input type="number" class="form-control" id="gst-in" name="gst" placeholder="Enter a valid GST Rate" required>
+    </div>
+    <div class="col-md-4">
+      <label for="mu-1-in" class="form-label">Measuring Unit-1 (small)*</label>
+      <input type="text" class="form-control" id="mu-1-in" name="mu_1" placeholder="Smaller Unit" required>
+    </div>
+    <div class="col-md-4">
+      <label for="mu-2-in" class="form-label">Measuring Unit-2 (large)</label>
+      <input type="text" class="form-control" id="mu-2-in" name="mu_2" placeholder="Bigger Unit">
+    </div>
+    <div id="measuring_relation" class="col-md-4 invisible">
+      <label for="mr-in" class="form-label">Measuring Relation</label>
+      <div class="d-flex">
+        <span class="form-label my-auto mx-1">1</span>
+        <span id="mu-2-put" class="form-label my-auto"> </span>
+        <span class="form-label my-auto mx-1"> = </span>
+        <input type="number" class="form-control" name="mr" id="mr-in">
+        <span id="mu-1-put" class="form-label my-auto ms-1"> </span>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="actual-qty-in" class="form-label">Total Quantity in Stock*</label>
+      <div class="input-group">
+        <input type="number" class="form-control" value="0" id="actual-qty-in" name="actual_qty" placeholder="Actual Quantity" required>
+        <span class="input-group-text" id="actual-qty-unit"> </span>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="gst-qty-in" class="form-label">Quantity in Stock (with GST Bill)*</label>
+      <div class="input-group">
+        <input type="number" class="form-control" value="0" id="gst-qty-in" name="gst_qty" placeholder="Quantity acc to Bills" required>
+        <span class="input-group-text" id="gst-qty-unit"> </span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Notifies you when stock goes below this value !!">
+        <label for="min-stock-alarm-in" class="form-label">Minimum Stock Alarm*</label>
+      </span>
+      <div class="input-group">
+        <input type="number" class="form-control" value="40" id="min-stock-alarm-in" name="min_stock_alarm" required>
+        <span class="input-group-text" id="min-stock-unit"> </span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Notifies you when you have a surplus of bills than actual quantity!!">
+        <label for="gst-surplus-in" class="form-label">GST Surplus Alarm*</label>
+      </span>
+      <div class="input-group">
+        <input type="number" class="form-control" value="40" id="gst-surplus-in" name="surplus_alarm" required>
+        <span class="input-group-text" id="gst-surplus-unit"> </span>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Notifies you when you have a defecit of bills than actual quantity!!">
+        <label for="gst-defecit-in" class="form-label">GST Defecit Alarm*</label>
+      </span>
+      <div class="input-group">
+        <input type="number" class="form-control" value="40" id="gst-defecit-in" name="defecit_alarm" required>
+        <span class="input-group-text" id="gst-defecit-unit"> </span>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="img-in" class="form-label">Product Image*</label>
+      <input type="file" class="form-control" id="img-in" name="img" required>
+    </div>
+    <div class="col-md-6">
+      <label for="price-in" class="form-label">Price*</label>
+      <div class="input-group">
+        <span class="input-group-text">₹</span>
+        <input type="number" class="form-control" id="price-in" name="price" placeholder="Can be in decimals" required>
+      </div>
+    </div>
+    <div class="btn-group">
+      <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Submit</button>
+      <a href={% url 'inventory:inventory' %} class="rounded mx-md-4 col-md-3 btn btn-danger">Discard</a>
+    </div>
+  </form>
+{% endblock %}

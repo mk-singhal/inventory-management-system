@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'accounts',
     'home',
     'inventory',
-    # 'ims',
+    'purchase',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
