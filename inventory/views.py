@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
+import json
 from .models import Product
 from django.core.paginator import Paginator
 from django.db.models import Q  # New
@@ -85,3 +86,14 @@ def edit_product(request, product_id):
         return redirect('inventory:inventory')
         
     return render(request, 'inventory/editProduct.html', {'sb':2, 'product':product_instance})
+
+def get_product(request, product_id):
+    product = Product.objects.get(pk=product_id)
+    product_dict = {}
+    product_dict['name'] = product.name
+    product_dict['pic_url'] = product.pic.url
+    product_dict['gst'] = product.gst
+    product_dict['hsn_code'] = product.hsn_code
+    product_dict['mu_1'] = product.measuring_unit_1
+    
+    return HttpResponse(json.dumps(product_dict), content_type="application/json")

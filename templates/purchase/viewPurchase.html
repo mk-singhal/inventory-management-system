@@ -1,0 +1,142 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  {% load static %}
+  {% load index %}
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between">
+    <p class="h3 mb-0 fw-bolder">Create Purchase</p>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+    </div>
+  </div>
+  <div class="d-sm-flex justify-content-end my-3" id="changeDisp">
+    <a href="{% url 'purchase:edit-purchase' po.id %}" class="btn btn-success me-3">Edit Purchase</a>
+    <a href="{% url 'purchase:del-purchase' po.id %}" class="btn btn-danger">Delete Purchase</a>
+  </div>
+  
+    <div class="row">
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-3 my-auto">
+            <img 
+                id="seller-pic" 
+                style="max-height:180px;" 
+                src="{{ po.seller.pic.url }}" 
+                class="py-2 rounded mx-auto d-block img-fluid" 
+                alt="No Image !"
+            >
+          </div>
+          <div class="col-md-9">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-3 pt-2">
+                  Seller
+                </div>
+                <div class="fw-bold col-sm-3 pt-2">
+                  {{ po.seller.name }}
+                </div>
+                <div class="col-sm-2 pt-2">
+                  GSTIN
+                </div>
+                <div class="fw-bold col-sm-4 pt-2">
+                  {% if po.seller.gstin %}{{ po.seller.gstin }}{% else %}- - -{% endif %}
+                </div>
+              </div>
+              <div class="row mt-sm-3">
+                <div class="col-sm-3 pt-2">
+                  Mobile number
+                </div>
+                <div class="fw-bold col-sm-3 pt-2">
+                  {% if po.seller.mob_no %}{{ po.seller.mob_no }}{% else %}- - -{% endif %}
+                </div>
+                <div class="col-sm-2 pt-2">
+                  Email
+                </div>
+                <div class="fw-bold col-sm-4 pt-2">
+                  {% if po.seller.email %}{{ po.seller.email }}{% else %}- - -{% endif %}
+                </div>
+              </div>
+              <div class="row mt-sm-3">
+                <div class="col-sm-3 pt-2">
+                  Address
+                </div>
+                <div class="fw-bold col-sm-9 pt-2">
+                  {% if po.seller.address %}{{ po.seller.address }}{% else %}- - -{% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Display:Table/List -->
+    <table class="table mt-4 mx-3" id="create-purchase-table">
+      <thead class="sticky-top">
+        <tr>
+          <th scope="col">Img</th>
+          <th scope="col">Name/HSN Code</th>
+          <th scope="col">GST</th>
+          <th scope="col">Qty without Bill</th>
+          <th scope="col">Qty with Bill</th>
+          <th scope="col">Only Bill</th>
+          <th scope="col">Total Qty</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pod in po.all_purchase_product.all %}
+        <tr>
+          <th id="product-pic" scope="row"><img src="{{ pod.product.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ pod.product.name }}"/></th>
+          <td>
+            <h5 class="ps-1">{{ pod.product.name }}</h5>
+            <p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>
+            <p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">
+              {% if pod.product.hsn_code %}{{ pod.product.hsn_code }}{% else %}- - -{% endif %}
+            </p>
+          </td>
+          <td id="product-gst">
+              {% if pod.product.gst %}{{ pod.product.gst }}%{% else %}- -{% endif %}
+          </td>
+          <td id="mu">
+              {{ pod.qty_nobill }} 
+              {{ pod.product.measuring_unit_1 }}
+              x 
+              ₹ 
+              {{ pod.cost_price }}
+              <br>
+              <br>
+              ₹ {{ qty_nobill_price|index:forloop.counter0 }}
+          </td>
+          <td id="mu">
+              {{ pod.qty_bill }} {{ pod.product.measuring_unit_1 }} X ₹ {{ pod.cost_price }}
+              <br>
+              + ({{ pod.product.gst }}% GST)
+              <br>
+              ₹ {{ qty_bill_price|index:forloop.counter0 }}
+          </td>
+          <td id="mu">
+              {{ pod.noqty_bill }} {{ pod.product.measuring_unit_1 }} X ₹ {{ pod.cost_price }}
+              <br>
+              + ({{ pod.product.gst }}% GST)
+              <br>
+              ₹ {{ noqty_bill_price|index:forloop.counter0 }}
+          </td>
+          <td>
+              {{ pod.qty_bill|add:pod.qty_nobill }} {{ pod.product.measuring_unit_1 }}
+              <br>
+              <br>
+              ₹ {{ total_price|index:forloop.counter0 }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-end mt-4 my-auto">
+      <h4 class="my-auto">
+        Total Price = ₹
+        <h3 class="mx-2 my-auto border border-secondary-subtle rounded p-2" style="color:black;" disabled>
+           {{total_purchase_order_price}}
+        </h3>
+      </h4>
+    </div>
+{% endblock %}

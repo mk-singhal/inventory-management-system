@@ -6,10 +6,10 @@ from . import views
 app_name = "purchase"
 urlpatterns = [
     path('', views.purchase, name="purchase"),
-    # path('view-seller/', views.view_seller, name="view-seller"),
-    # path('add-seller/', views.add_seller, name="add-seller"),
-    # path('edit-seller/<seller_id>/', views.edit_seller, name="edit-seller"),
-    # path('del-seller/<seller_id>/', views.del_seller, name="del-seller"),
+    path('create-purchase/', views.create_purchase, name="create-purchase"),
+    path('view-purchase/<purchase_order_id>/', views.view_purchase, name="view-purchase"),
+    path('edit-purchase/<purchase_order_id>/', views.edit_purchase, name="edit-purchase"),
+    path('del-purchase/<purchase_order_id>/', views.del_purchase, name="del-purchase"),
     # path('logout', views.logout, name="logout"),
     # path('activate/<uidb64>/<token>', views.activate, name="activate")
 ]

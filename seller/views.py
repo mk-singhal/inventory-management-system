@@ -1,4 +1,6 @@
-from django.shortcuts import render, redirect
+# from django.http import HttpResponse
+import json
+from django.shortcuts import render, redirect, HttpResponse
 from .models import Seller
 from django.core.paginator import Paginator
 from django.db.models import Q  # New
@@ -68,3 +70,20 @@ def del_seller(request, seller_id):
     seller_instance = Seller.objects.get(pk=seller_id)
     seller_instance.delete()
     return redirect('seller:seller')
+
+def get_seller(request, seller_id):
+    # print("\n%%%%%%")
+    seller = Seller.objects.get(pk=seller_id)
+    seller_dict = {}
+    seller_dict['name'] = seller.name
+    seller_dict['pic_url'] = seller.pic.url
+    seller_dict['gstin'] = seller.gstin
+    seller_dict['mob_no'] = seller.mob_no
+    seller_dict['email'] = seller.email
+    seller_dict['address'] = seller.address
+    
+    # schools = models.School.objects.filter(campus=campus)
+    # school_dict = {}
+    # for school in schools:
+        # school_dict[school.id] = school.name
+    return HttpResponse(json.dumps(seller_dict), content_type="application/json")

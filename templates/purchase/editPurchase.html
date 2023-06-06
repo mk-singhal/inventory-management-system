@@ -20,7 +20,7 @@
             <img 
                 id="seller-pic" 
                 style="max-height:180px;" 
-                src="{% static 'img/noImg.png' %}" 
+                src="{{ po.seller.pic.url }}" 
                 class="py-2 rounded mx-auto d-block img-fluid" 
                 alt="No Image !"
             >
@@ -33,9 +33,13 @@
                 </div>
                 <div class="col-sm-4 align-items-center pt-1">
                   <select id="select-seller" name="select_seller" style="width:100%;" required>
-                    <option value="" selected>Choose</option>
+                    {% comment %} <option value="" selected>Choose</option> {% endcomment %}
                     {% for s in seller %}
-                    <option value="{{ s.id }}">{{ s.name }}</option>
+                      {% if s.id == po.seller.id %}
+                        <option value="{{ s.id }}" selected>{{ s.name }}</option>
+                      {% else %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                      {% endif %}
                     {% endfor %}
                   </select>
                 </div>
@@ -43,7 +47,7 @@
                   GSTIN
                 </div>
                 <div id="seller-gstin" class="col-sm-4 pt-2">
-                  - - -
+                  {% if po.seller.gstin %}{{ po.seller.gstin }}{% else %}- - -{% endif %}
                 </div>
               </div>
               <div class="row mt-sm-3">
@@ -51,13 +55,13 @@
                   Mob No.
                 </div>
                 <div id="seller-mob_no" class="col-sm-3 pt-2">
-                  - - -
+                  {% if po.seller.mob_no %}{{ po.seller.mob_no }}{% else %}- - -{% endif %}
                 </div>
                 <div class="col-sm-2 pt-2">
                   Email
                 </div>
                 <div id="seller-email" class="col-sm-4 pt-2">
-                  - - -
+                  {% if po.seller.email %}{{ po.seller.email }}{% else %}- - -{% endif %}
                 </div>
               </div>
               <div class="row mt-sm-3">
@@ -65,7 +69,7 @@
                   Address
                 </div>
                 <div id="seller-address" class="col-sm-9 pt-2">
-                  - - -
+                  {% if po.seller.address %}{{ po.seller.address }}{% else %}- - -{% endif %}
                 </div>
               </div>
             </div>
@@ -93,43 +97,50 @@
         </tr>
       </thead>
       <tbody>
+        {% for pod in po.all_purchase_product.all %}
         <tr>
-          <th id="product-pic" scope="row"><img src="{% static 'img/noImg.png' %}" style="max-width:90px;max-height:90px" alt="No Image !"/></th>
+          <th id="product-pic" scope="row"><img src="{{ pod.product.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ pod.product.name }}"/></th>
           <td>
             <select name="select_products_0" aria-label="select product" required>
-              <option value="">Choose</option>
+              {% comment %} <option value="">Choose</option> {% endcomment %}
               {% for p in product %}
-                <option value="{{ p.id }}">{{ p.name }}</option>
+                {% if p.id == pod.product.id %}
+                  <option value="{{ p.id }}" selected>{{ p.name }}</option>
+                {% else %}
+                  <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endif %}
               {% endfor %}
             </select>
             <p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>
             <p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">
-            - - -
+              {% if pod.product.hsn_code %}{{ pod.product.hsn_code }}{% else %}- - -{% endif %}
             </p>
           </td>
-          <td id="product-gst">- -</td>
+          <td id="product-gst">
+            {% if pod.product.gst %}{{ pod.product.gst }}%{% else %}- -{% endif %}
+          </td>
           <td id="mu">
             <div id="qty-nobill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" name="qty_nobill_0" type="number" class="form-control" aria-describedby="qty-nobill-rel" aria-label="enter the quantity without bill" required>
-              <span class="input-group-text" id="qty-nobill-rel"></span>
+              <input min="0" value="{{ pod.qty_nobill }}" name="qty_nobill_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="qty-nobill-rel" aria-label="enter the quantity without bill" required>
+              <span class="input-group-text" id="qty-nobill-rel">{{ pod.product.measuring_unit_1 }}</span>
             </div>
           </td>
           <td id="mu">
             <div id="qty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" name="qty_bill_0" type="number" class="form-control" aria-describedby="qty-bill-rel" aria-label="enter the quantity with bill" required>
-              <span class="input-group-text" id="qty-bill-rel"></span>
+              <input min="0" value="{{ pod.qty_bill }}" name="qty_bill_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="qty-bill-rel" aria-label="enter the quantity with bill" required>
+              <span class="input-group-text" id="qty-bill-rel">{{ pod.product.measuring_unit_1 }}</span>
             </div>
           </td>
           <td id="mu">
             <div id="noqty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" name="noqty_bill_0" type="number" class="form-control" aria-describedby="noqty-bill-rel" aria-label="enter only billed" required>
-              <span class="input-group-text" id="noqty-bill-rel"></span>
+              <input min="0" value="{{ pod.noqty_bill }}" name="noqty_bill_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="noqty-bill-rel" aria-label="enter only billed" required>
+              <span class="input-group-text" id="noqty-bill-rel">{{ pod.product.measuring_unit_1 }}</span>
             </div>
           </td>
           <td id="mu">
             <div id="cost-price" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input step="0.01" min="0" name="cost_price_0" placeholder="₹" type="number" class="form-control" aria-describedby="cost-price-rel" aria-label="enter cost price" required>
-              <span class="input-group-text" id="cost-price-rel"></span>
+              <input min="0" step="0.01" value="{{ pod.cost_price }}" name="cost_price_{{forloop.counter0}}" placeholder="₹" type="number" class="form-control" aria-describedby="cost-price-rel" aria-label="enter cost price" required>
+              <span class="input-group-text" id="cost-price-rel">{{ pod.product.measuring_unit_1 }}</span>
             </div>
           </td>
           <td>
@@ -140,10 +151,11 @@
             </button>
           </td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
     <div class="btn-group">
-      <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Submit</button>
+      <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Submit and Review</button>
       <a href={% url 'purchase:purchase' %} class="rounded mx-md-4 col-md-3 btn btn-danger">Discard</a>
     </div>
   </form>
