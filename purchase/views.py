@@ -29,7 +29,6 @@ def purchase(request):
     except EmptyPage:
         # if page is empty then return last page
         page_obj = p.page(p.num_pages)
-    # print("\n\n$$$: ", [i for i in purchase_orders])
     return render(  
                     request, 
                     'purchase/purchase.html', 
@@ -46,8 +45,8 @@ def view_purchase(request, purchase_order_id):
     product_taxable_value_ls = []
     product_gst_ls = []
     product_price_ls = []
-    # total_price_ls = []
     total_purchase_order_price = 0
+    
     for pod in po.product.all():
         
         product_taxable_value = pod.qty * pod.cost_price
@@ -59,12 +58,6 @@ def view_purchase(request, purchase_order_id):
         product_price = ((pod.item.gst/100)+1)*(pod.qty * pod.cost_price)
         product_price_ls.append( (round(product_price, 2)) )
         
-        # noqty_bill_price = ((pod.product.gst/100)+1)*(pod.noqty_bill * pod.cost_price)
-        # noqty_bill_price_ls.append( (round(noqty_bill_price, 2)) )
-    
-        # total_price = qty_nobill_price + qty_bill_price + noqty_bill_price
-        # total_price_ls.append( (round(total_price, 2)) )
-        
         total_purchase_order_price += product_price
             
     return render(request, 'purchase/viewPurchase.html', {
@@ -73,7 +66,6 @@ def view_purchase(request, purchase_order_id):
         'product_taxable_value':product_taxable_value_ls,
         'product_gst':product_gst_ls,
         'product_price':product_price_ls,
-        # 'total_price':total_price_ls,
         'total_purchase_order_price':round(total_purchase_order_price, 2),
     })
 
@@ -88,7 +80,6 @@ def create_purchase(request):
         po_instance = PurchaseOrder()
         po_instance.seller = Seller.objects.get(pk=seller_id)
         po_instance.created_by = request.user
-        # po_instance.updated_by = request.user
         po_instance.save()
         
         for i in range(int(total_product)):
