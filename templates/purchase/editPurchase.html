@@ -3,7 +3,7 @@
   {% load static %}
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-2">
-    <p class="h3 mb-0 fw-bolder">Create Purchase</p>
+    <p class="h3 mb-0 fw-bolder">Edit Purchase</p>
     <div class="d-flex">
       <p class="text-dark fw-normal my-auto me-2">Status: </p>
       <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
@@ -89,22 +89,19 @@
           <th scope="col">Img</th>
           <th scope="col">Name/HSN Code</th>
           <th scope="col">GST</th>
-          <th scope="col">Qty without Bill</th>
-          <th scope="col">Qty with Bill</th>
-          <th scope="col">Only Bill</th>
-          <th scope="col">Cost Price</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Rate</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
-        {% for pod in po.all_purchase_product.all %}
+        {% for pod in po.product.all %}
         <tr>
-          <th id="product-pic" scope="row"><img src="{{ pod.product.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ pod.product.name }}"/></th>
+          <th id="product-pic" scope="row"><img src="{{ pod.item.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ pod.item.name }}"/></th>
           <td>
             <select name="select_products_0" aria-label="select product" required>
-              {% comment %} <option value="">Choose</option> {% endcomment %}
               {% for p in product %}
-                {% if p.id == pod.product.id %}
+                {% if p.id == pod.item.id %}
                   <option value="{{ p.id }}" selected>{{ p.name }}</option>
                 {% else %}
                   <option value="{{ p.id }}">{{ p.name }}</option>
@@ -113,38 +110,26 @@
             </select>
             <p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>
             <p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">
-              {% if pod.product.hsn_code %}{{ pod.product.hsn_code }}{% else %}- - -{% endif %}
+              {% if pod.item.hsn_code %}{{ pod.item.hsn_code }}{% else %}- - -{% endif %}
             </p>
           </td>
           <td id="product-gst">
-            {% if pod.product.gst %}{{ pod.product.gst }}%{% else %}- -{% endif %}
+            {% if pod.item.gst %}{{ pod.item.gst }}%{% else %}- -{% endif %}
           </td>
           <td id="mu">
-            <div id="qty-nobill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" value="{{ pod.qty_nobill }}" name="qty_nobill_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="qty-nobill-rel" aria-label="enter the quantity without bill" required>
-              <span class="input-group-text" id="qty-nobill-rel">{{ pod.product.measuring_unit_1 }}</span>
-            </div>
-          </td>
-          <td id="mu">
-            <div id="qty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" value="{{ pod.qty_bill }}" name="qty_bill_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="qty-bill-rel" aria-label="enter the quantity with bill" required>
-              <span class="input-group-text" id="qty-bill-rel">{{ pod.product.measuring_unit_1 }}</span>
-            </div>
-          </td>
-          <td id="mu">
-            <div id="noqty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" value="{{ pod.noqty_bill }}" name="noqty_bill_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="noqty-bill-rel" aria-label="enter only billed" required>
-              <span class="input-group-text" id="noqty-bill-rel">{{ pod.product.measuring_unit_1 }}</span>
+            <div id="qty" class="input-group input-group-sm mb-3" style="max-width:150px;">
+              <input min="0" value="{{ pod.qty }}" name="qty_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="qty-rel" aria-label="enter the quantity" required>
+              <span class="input-group-text" id="qty-rel">{{ pod.item.measuring_unit_1 }}</span>
             </div>
           </td>
           <td id="mu">
             <div id="cost-price" class="input-group input-group-sm mb-3" style="max-width:150px;">
               <input min="0" step="0.01" value="{{ pod.cost_price }}" name="cost_price_{{forloop.counter0}}" placeholder="₹" type="number" class="form-control" aria-describedby="cost-price-rel" aria-label="enter cost price" required>
-              <span class="input-group-text" id="cost-price-rel">{{ pod.product.measuring_unit_1 }}</span>
+              <span class="input-group-text" id="cost-price-rel">{{ pod.item.measuring_unit_1 }}</span>
             </div>
           </td>
           <td>
-            <button type="button" id="create-purchase-del-product" class="btn btn-danger">
+            <button {% if forloop.counter0 == 0 %}disabled{% endif %} type="button" id="create-purchase-del-product" class="btn btn-danger">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                 <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
               </svg>
@@ -181,21 +166,9 @@
                     '</td>' +
                     '<td id="product-gst">- -</td>' +
                     '<td id="mu">'+
-                      '<div id="qty-nobill" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
-                        '<input min="0" name="qty_nobill_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-nobill-rel" aria-label="enter the quantity without bill" required>'+
-                        '<span class="input-group-text" id="qty-nobill-rel"></span>'+
-                      '</div>'+
-                    '</td>'+
-                    '<td id="mu">'+
-                      '<div id="qty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
-                        '<input min="0" name="qty_bill_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-bill-rel" aria-label="enter the quantity with bill" required>'+
-                        '<span class="input-group-text" id="qty-bill-rel"></span>'+
-                      '</div>'+
-                    '</td>'+
-                    '<td id="mu">'+
-                      '<div id="noqty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
-                        '<input min="0" name="noqty_bill_' + tb_length + '" type="number" class="form-control" aria-describedby="noqty-bill-rel" aria-label="enter only billed" required>'+
-                        '<span class="input-group-text" id="noqty-bill-rel"></span>'+
+                      '<div id="qty" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
+                        '<input value="0" min="0" name="qty_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-rel" aria-label="enter the quantity" required>'+
+                        '<span class="input-group-text" id="qty-rel"></span>'+
                       '</div>'+
                     '</td>'+
                     '<td id="mu">'+

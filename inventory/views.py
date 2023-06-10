@@ -39,10 +39,10 @@ def add_product(request):
         instance.pic = request.FILES['img']
         instance.hsn_code = request.POST['hsn']
         instance.qty_actual = request.POST['actual_qty']
-        instance.qty_billed = request.POST['gst_qty']
+        # instance.qty_billed = request.POST['gst_qty']
         instance.min_stock_alarm = request.POST['min_stock_alarm']
-        instance.surplus_alarm = request.POST['surplus_alarm']
-        instance.defecit_alarm = request.POST['defecit_alarm']
+        # instance.surplus_alarm = request.POST['surplus_alarm']
+        # instance.defecit_alarm = request.POST['defecit_alarm']
         instance.measuring_unit_1 = request.POST['mu_1']
         if (request.POST['mu_2'] != ''): 
             instance.measuring_unit_2 = request.POST['mu_2']
@@ -69,10 +69,10 @@ def edit_product(request, product_id):
             product_instance.pic = request.FILES['img']
         product_instance.hsn_code = request.POST['hsn']
         product_instance.qty_actual = request.POST['actual_qty']
-        product_instance.qty_billed = request.POST['gst_qty']
+        # product_instance.qty_billed = request.POST['gst_qty']
         product_instance.min_stock_alarm = request.POST['min_stock_alarm']
-        product_instance.surplus_alarm = request.POST['surplus_alarm']
-        product_instance.defecit_alarm = request.POST['defecit_alarm']
+        # product_instance.surplus_alarm = request.POST['surplus_alarm']
+        # product_instance.defecit_alarm = request.POST['defecit_alarm']
         product_instance.measuring_unit_1 = request.POST['mu_1']
         if (request.POST['mu_2'] == ''): 
             product_instance.measuring_unit_2 = None

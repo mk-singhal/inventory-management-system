@@ -93,42 +93,17 @@
     <div class="col-md-6">
       <label for="actual-qty-in" class="form-label">Total Quantity in Stock*</label>
       <div class="input-group">
-        <input type="number" class="form-control" id="actual-qty-in" name="actual_qty" value="{{ product.qty_actual }}" required>
+        <input disabled type="number" class="form-control" id="actual-qty-in" name="actual_qty" value="{{ product.qty_actual }}" required>
         <span class="input-group-text" id="actual-qty-unit">{{ product.measuring_unit_1 }}</span>
       </div>
     </div>
     <div class="col-md-6">
-      <label for="gst-qty-in" class="form-label">Quantity in Stock (with GST Bill)*</label>
-      <div class="input-group">
-        <input type="number" class="form-control" id="gst-qty-in" name="gst_qty" value="{{ product.qty_billed }}" required>
-        <span class="input-group-text" id="gst-qty-unit">{{ product.measuring_unit_1 }}</span>
-      </div>
-    </div>
-    <div class="col-md-4">
       <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Notifies you when stock goes below this value !!">
         <label for="min-stock-alarm-in" class="form-label">Minimum Stock Alarm*</label>
       </span>
       <div class="input-group">
         <input type="number" class="form-control" id="min-stock-alarm-in" name="min_stock_alarm" value="{{ product.min_stock_alarm }}" required>
         <span class="input-group-text" id="min-stock-unit">{{ product.measuring_unit_1 }}</span>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Notifies you when you have a surplus of bills than actual quantity!!">
-        <label for="gst-surplus-in" class="form-label">GST Surplus Alarm*</label>
-      </span>
-      <div class="input-group">
-        <input type="number" class="form-control" id="gst-surplus-in" name="surplus_alarm" value="{{ product.surplus_alarm }}" required>
-        <span class="input-group-text" id="gst-surplus-unit">{{ product.measuring_unit_1 }}</span>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <span class="d-inline-block" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Notifies you when you have a defecit of bills than actual quantity!!">
-        <label for="gst-defecit-in" class="form-label">GST Defecit Alarm*</label>
-      </span>
-      <div class="input-group">
-        <input type="number" class="form-control" id="gst-defecit-in" name="defecit_alarm" value="{{ product.defecit_alarm }}" required>
-        <span class="input-group-text" id="gst-defecit-unit">{{ product.measuring_unit_1 }}</span>
       </div>
     </div>
     <div class="col-md-6">

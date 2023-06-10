@@ -54,14 +54,16 @@
               {{ order.seller.name }}
             </h4>
           </div>
-          <div class="p-3 mx-n3 mb-2" style="background-color: #eff1f2;">
-            {% for product in order.all_purchase_product.all %}
+          <div class="px-3 py-1" style="background-color: #eff1f2;">
+            {% for product in order.product.all %}
               <div class="d-flex justify-content-between my-2">
                 <div class="">
-                {{ product.product.name }}
+                {{ product.item.name }}
                 </div>
                 <div class="">
-                {{ product.qty_nobill|add:product.qty_bill }}
+                {{ product.qty }}
+                {{ product.item.measuring_unit_1 }}
+                {% comment %} &nbsp; ₹{{ product.cost_price }} {% endcomment %}
                 </div>
               </div>
             {% endfor %}

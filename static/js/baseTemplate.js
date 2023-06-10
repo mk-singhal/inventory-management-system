@@ -137,18 +137,18 @@ $(document).ready(function () {
     return false;
   });
 
-  $('#purchase-order-form').submit(function(event) {
+  $('#purchase-order-form').submit(function() {
     
     $('#create-purchase-table tbody tr').each(function (i) {
       $(this).find('select').attr('name', 'select_products_' + i)
-      $(this).find('div#qty-nobill > input').attr('name', 'qty_nobill_' + i);
-      $(this).find('div#qty-bill > input').attr('name', 'qty_bill_' + i);
-      $(this).find('div#noqty-bill > input').attr('name', 'noqty_bill_' + i);
+      $(this).find('div#qty > input').attr('name', 'qty_' + i);
+      // $(this).find('div#qty-bill > input').attr('name', 'qty_bill_' + i);
+      // $(this).find('div#noqty-bill > input').attr('name', 'noqty_bill_' + i);
       $(this).find('div#cost-price > input').attr('name', 'cost_price_' + i);
       console.log(i, $(this).find('select').attr('name'));
-      console.log(i, $(this).find('div#qty-nobill > input').attr('name'));
-      console.log(i, $(this).find('div#qty-bill > input').attr('name'));
-      console.log(i, $(this).find('div#noqty-bill > input').attr('name'));
+      console.log(i, $(this).find('div#qty > input').attr('name'));
+      // console.log(i, $(this).find('div#qty-bill > input').attr('name'));
+      // console.log(i, $(this).find('div#noqty-bill > input').attr('name'));
       console.log(i, $(this).find('div#cost-price > input').attr('name'));
     });
     var tb_length = $('table tr').length;

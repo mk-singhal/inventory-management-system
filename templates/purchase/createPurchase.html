@@ -85,10 +85,8 @@
           <th scope="col">Img</th>
           <th scope="col">Name/HSN Code</th>
           <th scope="col">GST</th>
-          <th scope="col">Qty without Bill</th>
-          <th scope="col">Qty with Bill</th>
-          <th scope="col">Only Bill</th>
-          <th scope="col">Cost Price</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Rate</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
@@ -109,21 +107,9 @@
           </td>
           <td id="product-gst">- -</td>
           <td id="mu">
-            <div id="qty-nobill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" name="qty_nobill_0" type="number" class="form-control" aria-describedby="qty-nobill-rel" aria-label="enter the quantity without bill" required>
-              <span class="input-group-text" id="qty-nobill-rel"></span>
-            </div>
-          </td>
-          <td id="mu">
-            <div id="qty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" name="qty_bill_0" type="number" class="form-control" aria-describedby="qty-bill-rel" aria-label="enter the quantity with bill" required>
-              <span class="input-group-text" id="qty-bill-rel"></span>
-            </div>
-          </td>
-          <td id="mu">
-            <div id="noqty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">
-              <input min="0" name="noqty_bill_0" type="number" class="form-control" aria-describedby="noqty-bill-rel" aria-label="enter only billed" required>
-              <span class="input-group-text" id="noqty-bill-rel"></span>
+            <div id="qty" class="input-group input-group-sm mb-3" style="max-width:150px;">
+              <input value="0" min="0" name="qty_0" type="number" class="form-control" aria-describedby="qty-rel" aria-label="enter the quantity" required>
+              <span class="input-group-text" id="qty-rel"></span>
             </div>
           </td>
           <td id="mu">
@@ -133,7 +119,7 @@
             </div>
           </td>
           <td>
-            <button type="button" id="create-purchase-del-product" class="btn btn-danger">
+            <button disabled type="button" id="create-purchase-del-product" class="btn btn-danger">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                 <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
               </svg>
@@ -169,21 +155,9 @@
                     '</td>' +
                     '<td id="product-gst">- -</td>' +
                     '<td id="mu">'+
-                      '<div id="qty-nobill" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
-                        '<input min="0" name="qty_nobill_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-nobill-rel" aria-label="enter the quantity without bill" required>'+
-                        '<span class="input-group-text" id="qty-nobill-rel"></span>'+
-                      '</div>'+
-                    '</td>'+
-                    '<td id="mu">'+
-                      '<div id="qty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
-                        '<input min="0" name="qty_bill_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-bill-rel" aria-label="enter the quantity with bill" required>'+
-                        '<span class="input-group-text" id="qty-bill-rel"></span>'+
-                      '</div>'+
-                    '</td>'+
-                    '<td id="mu">'+
-                      '<div id="noqty-bill" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
-                        '<input min="0" name="noqty_bill_' + tb_length + '" type="number" class="form-control" aria-describedby="noqty-bill-rel" aria-label="enter only billed" required>'+
-                        '<span class="input-group-text" id="noqty-bill-rel"></span>'+
+                      '<div id="qty" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
+                        '<input value="0" min="0" name="qty_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-rel" aria-label="enter the quantity" required>'+
+                        '<span class="input-group-text" id="qty-rel"></span>'+
                       '</div>'+
                     '</td>'+
                     '<td id="mu">'+
