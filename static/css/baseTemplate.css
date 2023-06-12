@@ -75,9 +75,13 @@ a:focus {
     display: none;
 }
 
+#sidebar div img{
+    margin-left: 0.5rem;
+}
+
 #sidebar .sidebar-header {
     height: 76px;
-    padding: 16px;
+    padding: 14px 3px;
     background: #3c3c3c;
 }
 
@@ -248,6 +252,9 @@ a.article:hover {
     #sidebar ul li a svg {
         height: 32px;
         width: 32px;
+    }
+    #sidebar div img{
+        margin-left: 1rem;
     }
     #sidebar ul li a span, #sidebar div span {
         display: none;

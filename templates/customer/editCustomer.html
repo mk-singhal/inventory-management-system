@@ -1,0 +1,94 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <p class="h3 mb-0 fw-bolder">Update the Item</p>
+    <div class="d-flex justify-content-end">
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-danger me-3" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+        </svg>
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Alert</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Are you sure, you want to delete this customer ?
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-success" data-bs-dismiss="modal">No</button>
+              <a href="{% url 'customer:del-customer' customer.id %}" type="button" class="btn btn-danger">Yes, Delete</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex">
+        <p class="text-dark fw-normal my-auto me-2">Status: </p>
+        <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+      </div>
+    </div>
+  </div>
+
+  <form enctype="multipart/form-data" action="" method="POST" class="row g-3 needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="row px-0 pt-4">
+      <div class="col-md-3 mb-3 mb-md-0">
+        <img 
+            src="{{ customer.pic.url }}" 
+            class="mx-auto d-block" 
+            alt="{{ customer.name }}" 
+            style="max-height:150px;max-width:100%;"
+            {% comment %} width="220px" {% endcomment %}
+        />
+      </div>
+      <div class="col-md-9 px-md-0">
+        <div class="row">
+          <label for="name-in" class="form-label col-md-2 my-auto">Name*</label>
+          <div class=" col-md-4 ps-0 mb-3">
+            <input type="text" class="form-control" id="name-in" name="name" value="{{ customer.name }}" required>
+          </div>
+          <label for="gstin-in" class="form-label col-md-2 my-auto">GSTIN</label>
+          <div class=" col-md-4 ps-0 mb-3">
+            <input type="text" class="form-control" id="gstin-in" name="gstin" value="{% if customer.gstin %}{{ customer.gstin }}{% endif %}">
+          </div>
+        </div>
+        <div class="row">
+          <label for="mob-in" class="form-label col-md-3 my-auto">Mobile Number</label>
+          <div class=" col-md-3 ps-0 mb-3">
+            <input type="number" class="form-control" id="mob-in" name="mob_no" value="{% if customer.mob_no %}{{ customer.mob_no }}{% endif %}">
+          </div>
+          <label for="email-in" class="form-label col-md-2 my-auto">Email</label>
+          <div class="col-md-4 ps-0 mb-3">
+            <input type="email" class="form-control" id="email-in" name="email" value="{% if customer.email %}{{ customer.email }}{% endif %}">
+          </div>
+        </div>
+        <div class="row">
+          <label for="img-in" class="form-label col-md-2 my-auto">Image</label>
+          <div class="col-md-10 ps-0 mb-3">
+            <input type="file" class="form-control" id="img-in" name="pic">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row px-0 mt-md-3">
+      {% comment %} <div class="col-md-12"> {% endcomment %}
+          <label for="add-in" class="col-md-2 my-auto form-label">Address</label>
+          <div class="col-md-10 px-md-0">
+            <input type="text" class="form-control" id="add-in" name="address" value="{% if customer.address %}{{ customer.address }}{% endif %}">
+          </div>
+      {% comment %} </div> {% endcomment %}
+    </div>
+    <div class="btn-group mt-4">
+      <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Save Changes</button>
+      <a href={% url 'customer:customer' %} class="rounded mx-md-4 col-md-3 btn btn-danger">Discard</a>
+    </div>
+  </form>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <p class="h3 mb-0 fw-bolder">Add Customer</p>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+    </div>
+  </div>
+
+  <form enctype="multipart/form-data" action="" method="POST" class="row g-3 needs-validation" novalidate>
+    {% csrf_token %}
+    <div class="col-md-4">
+      <label for="name-in" class="form-label">Name*</label>
+      <input type="text" class="form-control" id="name-in" name="name" autocomplete="on" required>
+    </div>
+    <div class="col-md-4">
+      <label for="gstin-in" class="form-label">GSTIN</label>
+      <input type="text" class="form-control" id="gstin-in" name="gstin">
+    </div>
+    <div class="col-md-4">
+      <label for="mob-in" class="form-label">Mobile Number</label>
+      <input type="number" class="form-control" id="mob-in" name="mob_no">
+    </div>
+    <div class="col-md-6">
+      <label for="add-in" class="form-label">Address</label>
+      <input type="text" class="form-control" id="add-in" name="address">
+    </div>
+    <div class="col-md-6">
+      <label for="email-in" class="form-label">Email</label>
+      <input type="email" class="form-control" id="email-in" name="email">
+    </div>
+    <div class="col-md-12 mb-3">
+      <label for="img-in" class="form-label">Image</label>
+      <input type="file" class="form-control" id="img-in" name="pic">
+    </div>
+    <div class="btn-group">
+      <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Submit</button>
+      <a href={% url 'customer:customer' %} class="rounded mx-md-4 col-md-3 btn btn-danger">Discard</a>
+    </div>
+  </form>
+{% endblock %}

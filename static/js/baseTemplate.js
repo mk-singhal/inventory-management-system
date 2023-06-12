@@ -5,11 +5,6 @@ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstra
 
 $(document).ready(function () {
   // For Side-Bar
-  // $("#sidebar").mCustomScrollbar({
-  //     theme: "minimal"
-  // });
-  
-  // For Side-Bar
   $('#sidebarCollapse').on('click', function () {
       $('#sidebar, #content').toggleClass('active');
       $('.collapse.in').toggleClass('in');

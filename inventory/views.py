@@ -36,9 +36,11 @@ def add_product(request):
         # print("\n\n##################", request.POST, request.FILES['img'])
         instance = Product()
         instance.name = request.POST['name']
-        instance.pic = request.FILES['img']
+        # instance.pic = request.FILES['img']
+        if bool(request.FILES.get('img', False)) == True:
+            instance.pic = request.FILES['img']
         instance.hsn_code = request.POST['hsn']
-        instance.qty_actual = request.POST['actual_qty']
+        instance.qty = request.POST['actual_qty']
         # instance.qty_billed = request.POST['gst_qty']
         instance.min_stock_alarm = request.POST['min_stock_alarm']
         # instance.surplus_alarm = request.POST['surplus_alarm']
@@ -68,7 +70,7 @@ def edit_product(request, product_id):
         if bool(request.FILES.get('img', False)) == True:
             product_instance.pic = request.FILES['img']
         product_instance.hsn_code = request.POST['hsn']
-        product_instance.qty_actual = request.POST['actual_qty']
+        # product_instance.qty = request.POST['actual_qty']
         # product_instance.qty_billed = request.POST['gst_qty']
         product_instance.min_stock_alarm = request.POST['min_stock_alarm']
         # product_instance.surplus_alarm = request.POST['surplus_alarm']
