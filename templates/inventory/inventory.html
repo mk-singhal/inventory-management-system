@@ -1,9 +1,14 @@
 {% extends 'baseTemplate.html' %}
 {% block content %}
+  {% comment %} {% load l10n %} {% endcomment %}
   {% load static %}
   {% load divide %}
   {% load sub %}
   {% load remainder %}
+  {% load indian_num %}
+
+  {% comment %} {% localize on %} {% endcomment %}
+
   <!-- Page Heading -->
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 fw-bolder">Inventory</h1>
@@ -68,7 +73,7 @@
               {{ p.name }}         <!--   -{{ p.id }}   -->
             </h4>
             <h5 class="text-primary mb-1 pb-3">
-              ₹{{ p.price }}
+              {{ p.price|indian_num }}
             </h5>
           </div>
           <div class="text-center">
@@ -169,6 +174,8 @@
       {% endif %}
     </ul>
   </nav>
+  
+  {% comment %} {% endlocalize %} {% endcomment %}
 
 
 {% endblock %}

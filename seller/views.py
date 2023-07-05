@@ -1,9 +1,9 @@
-# from django.http import HttpResponse
 import json
-from django.shortcuts import render, redirect, HttpResponse
+from django.http import Http404
+from django.shortcuts import get_object_or_404, render, redirect, HttpResponse
 from .models import Seller
 from django.core.paginator import Paginator
-from django.db.models import Q  # New
+from django.db.models import Q 
 from django.db.models.functions import Lower
 
 
@@ -12,10 +12,10 @@ def seller(request):
     # For searching the Sellers
     search_seller = request.GET.get('search_seller')
     if search_seller:
-        seller = Seller.objects.filter(Q(name__icontains=search_seller))
+        seller = Seller.objects.exclude(id=1).filter(Q(name__icontains=search_seller))
     else:
         # If not searched, return default posts
-        seller = Seller.objects.all().order_by(Lower("name"))
+        seller = Seller.objects.all().exclude(id=1).order_by(Lower("name"))
     
     p = Paginator(seller, 12)  # creating a paginator object
     # getting the desired page number from url
@@ -50,7 +50,10 @@ def add_seller(request):
     return render(request, 'seller/addSeller.html', {'sb':6})
 
 def edit_seller(request, seller_id):
-    seller_instance = Seller.objects.get(pk=seller_id)
+    if seller_id == 1:
+      raise Http404
+    seller_instance = get_object_or_404(Seller, pk=seller_id)
+    
     if request.method == 'POST':
         seller_instance.name = request.POST['name']
         seller_instance.gstin = request.POST['gstin']
@@ -67,12 +70,13 @@ def edit_seller(request, seller_id):
     return render(request, 'seller/editSeller.html', {'sb':6, 'seller':seller_instance})
 
 def del_seller(request, seller_id):
-    seller_instance = Seller.objects.get(pk=seller_id)
+    if seller_id == 1:
+      raise Http404
+    seller_instance = get_object_or_404(Seller, pk=seller_id)
     seller_instance.delete()
     return redirect('seller:seller')
 
 def get_seller(request, seller_id):
-    # print("\n%%%%%%")
     seller = Seller.objects.get(pk=seller_id)
     seller_dict = {}
     seller_dict['name'] = seller.name
@@ -82,8 +86,4 @@ def get_seller(request, seller_id):
     seller_dict['email'] = seller.email
     seller_dict['address'] = seller.address
     
-    # schools = models.School.objects.filter(campus=campus)
-    # school_dict = {}
-    # for school in schools:
-        # school_dict[school.id] = school.name
     return HttpResponse(json.dumps(seller_dict), content_type="application/json")

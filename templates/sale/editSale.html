@@ -1,0 +1,196 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  {% load static %}
+  <!-- Page Heading -->
+  <div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <p class="h3 mb-0 fw-bolder">Edit Sale</p>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+    </div>
+  </div>
+
+  <form id="sale-order-form" enctype="multipart/form-data" action="" method="POST" class="row mt-4 g-3 needs-validation" novalidate>
+    {% csrf_token %}
+  
+    <div class="row">
+      <div class="card mb-3">
+        <div class="row g-0">
+          <div class="col-md-3 my-auto">
+            <img 
+                id="customer-pic" 
+                style="max-height:180px;" 
+                src="{{ po.customer.pic.url }}" 
+                class="py-2 rounded mx-auto d-block img-fluid" 
+                alt="No Image !"
+            >
+          </div>
+          <div class="col-md-9">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-2 pt-2">
+                  Customer:
+                </div>
+                <div class="col-sm-4 align-items-center pt-1">
+                  <select id="select-customer" name="select_customer" style="width:100%;" required>
+                    {% comment %} <option value="" selected>Choose</option> {% endcomment %}
+                    {% for s in customer %}
+                      {% if s.id == po.customer.id %}
+                        <option value="{{ s.id }}" selected>{{ s.name }}</option>
+                      {% else %}
+                        <option value="{{ s.id }}">{{ s.name }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-sm-2 pt-2">
+                  GSTIN
+                </div>
+                <div id="customer-gstin" class="col-sm-4 pt-2">
+                  {% if po.customer.gstin %}{{ po.customer.gstin }}{% else %}- - -{% endif %}
+                </div>
+              </div>
+              <div class="row mt-sm-3">
+                <div class="col-sm-3 pt-2">
+                  Mob No.
+                </div>
+                <div id="customer-mob_no" class="col-sm-3 pt-2">
+                  {% if po.customer.mob_no %}{{ po.customer.mob_no }}{% else %}- - -{% endif %}
+                </div>
+                <div class="col-sm-2 pt-2">
+                  Email
+                </div>
+                <div id="customer-email" class="col-sm-4 pt-2">
+                  {% if po.customer.email %}{{ po.customer.email }}{% else %}- - -{% endif %}
+                </div>
+              </div>
+              <div class="row mt-sm-3">
+                <div class="col-sm-3 pt-2">
+                  Address
+                </div>
+                <div id="customer-address" class="col-sm-9 pt-2">
+                  {% if po.customer.address %}{{ po.customer.address }}{% else %}- - -{% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end">
+      <button type="button" id="add-product-btn" class="btn btn-success">
+        Add Product
+      </button>
+    </div>
+    <!-- Display:Table/List -->
+    <table class="table" id="create-sale-table">
+      <thead class="sticky-top">
+        <tr>
+          <th scope="col">Img</th>
+          <th scope="col">Name/HSN Code</th>
+          <th scope="col">GST</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Rate</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for pod in po.product.all %}
+        <tr>
+          <th id="product-pic" scope="row"><img src="{{ pod.item.pic.url }}" style="max-width:90px;max-height:90px" alt="{{ pod.item.name }}"/></th>
+          <td>
+            <select name="select_products_0" aria-label="select product" required>
+              {% for p in product %}
+                {% if p.id == pod.item.id %}
+                  <option value="{{ p.id }}" selected>{{ p.name }}</option>
+                {% else %}
+                  <option value="{{ p.id }}">{{ p.name }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+            <p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>
+            <p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">
+              {% if pod.item.hsn_code %}{{ pod.item.hsn_code }}{% else %}- - -{% endif %}
+            </p>
+          </td>
+          <td id="product-gst">
+            {% if pod.item.gst %}{{ pod.item.gst }}%{% else %}- -{% endif %}
+          </td>
+          <td id="mu">
+            <div id="qty" class="input-group input-group-sm mb-3" style="max-width:150px;">
+              <input min="0" value="{{ pod.qty }}" name="qty_{{forloop.counter0}}" type="number" class="form-control" aria-describedby="qty-rel" aria-label="enter the quantity" required>
+              <span class="input-group-text" id="qty-rel">{{ pod.item.measuring_unit_1 }}</span>
+            </div>
+          </td>
+          <td id="mu">
+            <div id="cost-price" class="input-group input-group-sm mb-3" style="max-width:150px;">
+              <input min="0" step="0.01" value="{{ pod.cost_price }}" name="cost_price_{{forloop.counter0}}" placeholder="₹" type="number" class="form-control" aria-describedby="cost-price-rel" aria-label="enter cost price" required>
+              <span class="input-group-text" id="cost-price-rel">{{ pod.item.measuring_unit_1 }}</span>
+            </div>
+          </td>
+          <td>
+            <button {% if forloop.counter0 == 0 %}disabled{% endif %} type="button" id="create-sale-del-product" class="btn btn-danger">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div class="btn-group">
+      <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Submit and Review</button>
+      <a href={% url 'sale:sale' %} class="rounded mx-md-4 col-md-3 btn btn-danger">Discard</a>
+    </div>
+  </form>
+  <script>
+    $(document).ready(function () {
+      $('select').select2();
+      
+      $("#add-product-btn").click(function(){
+        var tb_length = $('table tr').length;
+        var row = '<tr>' +
+                    '<th id="product-pic" scope="row"><img src="{% static "img/noImg.png" %}" style="max-width:90px;max-height:90px" alt="No Image !"/></th>' +
+                    '<td>'+
+                      '<select name="Products_' + tb_length + '" aria-label="select product" required>'+
+                        '<option value="">Choose</option>'+
+                        '{% for p in product %}'+
+                          '<option value="{{ p.id }}">{{ p.name }}</option>'+
+                        '{% endfor %}'+
+                      '</select>'+
+                      '<p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>'+
+                      '<p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">'+
+                        '- - -'+
+                      '</p>'+
+                    '</td>' +
+                    '<td id="product-gst">- -</td>' +
+                    '<td id="mu">'+
+                      '<div id="qty" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
+                        '<input value="0" min="0" name="qty_' + tb_length + '" type="number" class="form-control" aria-describedby="qty-rel" aria-label="enter the quantity" required>'+
+                        '<span class="input-group-text" id="qty-rel"></span>'+
+                      '</div>'+
+                    '</td>'+
+                    '<td id="mu">'+
+                      '<div id="cost-price" class="input-group input-group-sm mb-3" style="max-width:150px;">'+
+                        '<input min="0" step="0.01" name="cost_price_' + tb_length + '" placeholder="₹" type="number" class="form-control" aria-describedby="bill-qty-rel" aria-label="enter cost price" required>'+
+                        '<span class="input-group-text" id="cost-price-rel"></span>'+
+                      '</div>'+
+                    '</td>'+
+                    '<td>'+
+                      '<button type="button" id="create-sale-del-product" class="btn btn-danger">'+
+                        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">'+
+                          '<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>'+
+                        '</svg>'+
+                      '</button>'+
+                    '</td>'+
+                  '</tr>';
+        $("#create-sale-table").append(row);		
+        $('select').select2();
+      });
+      $('table').on('click', 'button#create-sale-del-product', function(){
+        $(this).closest('tr').remove();
+      });
+    });
+  </script>
+{% endblock %}

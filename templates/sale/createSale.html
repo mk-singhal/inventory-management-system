@@ -1,0 +1,440 @@
+{% extends 'baseTemplate.html' %}
+{% block content %}
+  {% load static %}
+  {% load indian_num %}
+  {% load amt2word %}
+  <!-- Page Heading -->
+
+  <div class="d-sm-flex align-items-center justify-content-between mb-2">
+    <p class="h3 mb-0 fw-bolder">Create Sale</p>
+    <div class="d-flex">
+      <p class="text-dark fw-normal my-auto me-2">Status: </p>
+      <p class="border border-1 rounded text-dark fw-bold my-auto text-capitalize p-1" style="color: #6a6a6a!important;">{{ user.profile.status }}</p>
+    </div>
+  </div>
+
+  <fieldset class="row mb-3">
+    <legend class="ps-4 col-form-label fs-6 col-sm-3 pt-0">Customer have GST:</legend>
+    <div id="sale-customer-status" class="col-sm-9 justify-content-end">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="customer_status" id="registered" value="yes" checked>
+        <label class="form-check-label" for="registered">Yes</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="customer_status" id="unregistered" value="no">
+        <label class="form-check-label" for="unregistered">No</label>
+      </div>
+    </div>
+    <div class="input-group" style="width:520px;">
+      <label class="input-group-text" for="create-sale-select-gst">Select the applicable GST</label>
+      <select id="create-sale-select-gst" class="form-select" aria-label="Select applicable GST">
+        {% for choice in sale_choices %}
+          <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+          {% comment %} <option value="2">Intra-State (UTGST)</option> {% endcomment %}
+          {% comment %} <option value="3">Inter-State (IGST)</option> {% endcomment %}
+        {% endfor %}
+      </select>
+    </div>
+  </fieldset>
+
+  <form id="sale-order-form" enctype="multipart/form-data" action="" method="POST" class="needs-validation" novalidate>
+    <div style="overflow:auto;" class="container-fluid mt-2 mb-4 p-3 pb-0 bg-white border rounded">
+      <div style="min-width:924px;">
+        <div id="page" class="page p-2">
+          {% csrf_token %}
+          
+          <div class="row">
+            
+            <div class="col-2 mt-1">
+              <img src="{% static 'img/logo_inv.png' %}" class="mw-100 mh-100 rounded" alt="...">
+            </div>
+            
+            <div class="col-10">
+              <div class="row justify-content-between">
+                <div class="col-6  mt-1">
+                  <h4><b>Company Name Pvt Ltd</b></h4>
+                </div>
+                <div class="col-5 text-end">
+                  <h6 id="view-sale-whichBillValue" style="color:#6e6e6e;">Original for Receptient</h6>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-5">
+                  <p class="fs-6 text-dark fw-normal">
+                    Address Line - 1<br>
+                    Address Line - 2<br>
+                    Haryana, India<br>
+                  </p>
+                </div>
+                <div class="col-3">
+                  <p class="text-dark text-end fs-6 fw-medium">
+                    Invoice No.<br>
+                    Invoice Date<br>
+                    GSTIN
+                  </p>
+                </div>
+                <div class="col">
+                  <p class="text-dark fs-6 fw-normal">
+                    {{ invoice_number }}<br>
+                    {% now 'j F Y' %}<br>
+                    <span class="fw-bold">18AABCU9603R1ZM</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+      
+          <hr class="mt-0 mb-2">
+
+          <div class="row">
+            
+            <div class="col">
+              <div class="row">
+                <p class="text-dark fs-5 mb-0 fw-medium">
+                  Bill To
+                </p>
+                <div>
+                  <select id="select-customer" style="width:180px;" name="select_customer" required>
+                    <option value="" selected>Select Customer*</option>
+                    {% for s in customer %}
+                    <option value="{{ s.id }}">{{ s.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <div class="invalid-feedback">
+                    Please select Customer.
+                  </div>
+                </div>
+                <p id="sale-bill-to" class="text-dark mt-2 fs-6 fw-normal">
+                  <input disabled name="bill_to_name" style="max-width:70%;" class="my-1 form-control form-control-sm" type="text" placeholder="Company Name*" aria-label="Company Name" hidden required>
+                  <input disabled readonly name="bill_to_add1" style="max-width:95%;" class="my-1 form-control form-control-sm" type="text" placeholder="Address Line-1*" aria-label="Address Line-1" required>
+                  <input disabled readonly name="bill_to_add2" style="max-width:95%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Address Line-2*" aria-label="Address Line-2" required>
+                  
+                  <select class="fs-6 p-0 px-1 fw-lighter form-select" style="height:30px;width:90%;" name="bill_to_state" hidden disabled required>
+                    <option value="" selected>Select State*</option>
+                    {% for s in state %}
+                    <option value="{{ s.id }}">{{ s.name }}</option>
+                    {% endfor %}
+                  </select>
+
+                  <input disabled readonly name="bill_to_gstin" style="max-width:70%;" class="mb-1 form-control form-control-sm" type="text" placeholder="GSTIN*" aria-label="GSTIN" required>
+                </p>
+              </div>
+            </div>
+            
+            <div class="col">
+              <div class="row">
+                <p class="text-dark fs-5 mb-0 fw-medium">
+                  <span class="ms-0">Ship To</span>
+                </p>
+                <div class="ms-3 form-check">
+                  <input name="sale_same_as_bill_to" class="form-check-input" type="checkbox" value="yes" id="sale-same-as-bill-to">
+                  <label class="form-check-label" for="sale-same-as-bill-to">
+                    same as Bill To
+                  </label>
+                </div>
+                <p class="text-dark fs-5 my-0 fw-medium" id="sale-ship-to">
+                  <input name="ship_to_name" style="max-width:70%;" class="mt-2 mb-1 form-control form-control-sm" type="text" placeholder="Company Name*" aria-label="Company Name" required>
+                  <input name="ship_to_add1" style="max-width:80%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Address Line-1*" aria-label="Address Line-1" required>
+                  <input name="ship_to_add2" style="max-width:80%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Address Line-2*" aria-label="Address Line-2" required>
+                  <select class="fs-6 p-0 px-1 fw-lighter form-select" style="height:30px;width:90%;" name="ship_to_state" hidden disabled required>
+                    <option value="" selected>Select State*</option>
+                    {% for s in state %}
+                    <option value="{{ s.id }}">{{ s.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <input name="ship_to_gstin" style="max-width:70%;" class="mb-1 form-control form-control-sm" type="text" placeholder="GSTIN" aria-label="GSTIN">
+                </p>
+              </div>
+            </div>
+
+            <div class="col">
+              <div class="row">
+                <p class="text-dark fs-5 mb-0 fw-medium">
+                  Transportation Details
+                </p>
+                <p class="text-dark fs-6 fw-normal">
+                  <input name="transport_name" style="max-width:70%;" class="mt-2 mb-1 form-control form-control-sm" type="text" placeholder="Transportation Name" aria-label="Transportation Name">
+                  <input name="transport_id" style="max-width:70%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Transporter ID" aria-label="Transporter ID">
+                  <input name="transport_mode" style="max-width:70%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Transportation Mode" aria-label="Transportation Mode">
+                  <input name="transport_vehicle" style="max-width:60%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Vehicle Number" aria-label="Vehicle Number">
+                  <input name="transport_gstin" style="max-width:80%;" class="mb-1 form-control form-control-sm" type="text" placeholder="Transporter GSTIN" aria-label="Transporter GSTIN">
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+
+          <!-- Display:Table/List -->
+          <div class="table-responsive mt-3">
+            <table class="mb-0 table table-borderless" style="height:37vh;" id="sale-table">
+              <thead class="sticky-top">
+                <tr style="line-height: 16px; height: 16px;">
+                  <th scope="col-2">Name</th>
+                  <th scope="col">Qty</th>
+                  <th scope="col">Rate</th>
+                  <th scope="col">Discount</th>
+                  <th scope="col">Taxable Value</th>
+                  <th scope="col" id="cgst">CGST</th>
+                  <th scope="col" id="sgst">SGST</th>
+                  <th scope="col" id="utgst" hidden>UTGST</th>
+                  <th scope="col" id="igst" hidden>IGST</th>
+
+                  <th scope="col">Total</th>
+                  <th scope="col">
+                  
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="line-height: 20px; height: 20px;">
+                  <td>
+                    <select name="select_product_0" style="min-width:120px;" aria-label="select product" required>
+                      <option value="">Choose*</option>
+                      {% for p in product %}
+                      <option value="{{ p.id }}">{{ p.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                      Please select a product.
+                    </div>
+                    <p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>
+                    <p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">
+                    - - -
+                    </p>
+                  </td>
+                  <td id="mu">
+                    <div class="input-group input-group-sm mb-3" style="width:120px;">
+                      <input name="sale_qty_0" id="sale-qty" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
+                      <span class="input-group-text" id="inputGroup-sizing-sm"></span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="input-group input-group-sm mb-3" style="width:100px;">
+                      <span class="input-group-text" id="inputGroup-sizing-sm">₹</span>
+                      <input name="sale_rate_0" id="sale-rate" type="number" step=".01" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="input-group input-group-sm mb-3" style="width:90px;">
+                      <input name="sale_dis_0" id="sale-dis" type="number" step=".01" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
+                      <span class="input-group-text" id="inputGroup-sizing-sm">%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <p id="sale-taxable-value" class="text-dark fs-6 fw-normal mb-0">₹--</p>
+                  </td>
+                  <td id="cgst" style="width:74px;">
+                    <p id="sale-tax-cgst" class="text-dark fs-6 fw-normal mb-0">₹--</p>
+                    <p class="text-dark fs-6 fw-lighter mb-0">
+                      @ <span>--</span>%
+                    </p>
+                  </td>
+                  <td id="sgst" style="width:74px;">
+                    <p id="sale-tax-sgst" class="text-dark fs-6 fw-normal mb-0">₹--</p>
+                    <p id="sale-tax-sgst-rate" class="text-dark fs-6 fw-lighter mb-0">
+                      @ <span>--</span>%
+                    </p>
+                  </td>
+                  <td id="utgst" style="width:70px;" hidden>
+                    <p id="sale-tax-utgst" class="text-dark fs-6 fw-normal mb-0">₹--</p>
+                    <p id="sale-tax-utgst-rate" class="text-dark fs-6 fw-lighter mb-0">
+                      @ <span>--</span>%
+                    </p>
+                  </td>
+                  <td id="igst" style="width:70px;" hidden>
+                    <p id="sale-tax-igst" class="text-dark fs-6 fw-normal mb-0">₹--</p>
+                    <p id="sale-tax-igst-rate" class="text-dark fs-6 fw-lighter mb-0">
+                      @ <span>--</span>%
+                    </p>
+                  </td>
+                  <td>
+                    <p id="sale-total" class="text-dark fs-6 fw-normal mb-0">₹--</p>
+                  </td>
+                  <td>
+                    <button type="button" id="sale-del-product" class="mt-1 btn btn-danger btn-sm" disabled>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                        <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                
+                <tr style="border-top: 1px solid #c7c8c9;line-height: 20px; height: 20px;">
+                  <td>
+                    <button type="button" id="sale-add-product" class="btn btn-success btn-sm">
+                      Add Product
+                    </button>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td><b>Total</b></td>
+                  <td>₹--</td>
+                  <td id="cgst">₹--</td>
+                  <td id="sgst">₹--</td>
+                  <td id="utgst" hidden>₹--</td>
+                  <td id="igst" hidden>₹--</td>
+                  <td>₹--</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="row mt-3">
+          
+            <div class="col-3">
+              <p class="text-dark fs-6 fw-medium">
+                Total Amount (in words)
+              </p>
+            </div>
+            <div class="col-5">
+              <p id="sale-total-amt-words" class="text-dark fs-6 fw-normal">
+                
+              </p>
+            </div>
+
+            <div class="col-2">
+              <p class="text-dark fs-6 fw-medium">
+                Taxable Amt.<br>
+                Total Tax<br>
+                Invoice Total
+              </p>
+            </div>
+            <div class="col-2 text-end">
+              <p class="text-dark fs-6 fw-normal">
+                <span id="sale-taxable-amt">₹--</span><br>
+                <span id="sale-total-tax">₹--</span><br>
+                <span id="sale-total-amt">₹--</span>
+              </p>
+            </div>
+            
+          </div>
+
+          <div class="row">
+          
+            <div class="col-8">
+              <p class="text-dark mb-1 fs-6 fw-medium">
+                Note:
+              </p>
+              <ol class="">
+                <li class="">A list item</li>
+                <li class="">A list item</li>
+                <li class="">A list item</li>
+                <li class="">A list item</li>
+              </ol>
+            </div>
+
+            <div class="col text-center">
+              <br><br>
+              <hr style="color:black;">
+              <p class="text-dark fs-6 fw-medium">
+                For Company Name Pvt Ltd<br>
+                (Authorised Signatory)
+              </p>
+            </div>
+            
+          </div>
+
+        </div>
+      </div>
+    </div>
+    {% comment %} <button id="cmd">generate PDF</button> {% endcomment %}
+    
+    <div class="row">
+      <div class="btn-group p-0">
+        <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Submit</button>
+        <a href={% url 'sale:sale' %} class="rounded mx-md-4 col-md-3 btn btn-danger">Discard</a>
+      </div>
+    </div>
+  </form>
+    
+  <script>
+    $(document).ready(function () {
+      $('table select, #select-customer').select2();
+      
+      $("#sale-add-product").click(function(){
+        var tb_length = $('table tr').length-2;
+        var row = 
+          '<tr style="line-height: 20px; height: 20px;">'+
+            '<td>'+
+              '<select name="select_product_' + tb_length + '" style="min-width:120px;" aria-label="select product" required>'+
+                '<option value="">Choose*</option>'+
+                '{% for p in product %}'+
+                '<option value="{{ p.id }}">{{ p.name }}</option>'+
+                '{% endfor %}'+
+              '</select>'+
+              '<div class="invalid-feedback">'+
+                'Please select a product.'+
+              '</div>'+
+              '<p style="color:black;" class="mt-2 fs-6 mb-0 ps-2">HSN Code: </p>'+
+              '<p id="product-hsn_code" class="ps-2 fw-normal" style="color:black;">'+
+              '- - -'+
+              '</p>'+
+            '</td>'+
+            '<td id="mu">'+
+              '<div class="input-group input-group-sm mb-3" style="width:120px;">'+
+                '<input name="sale_qty_' + tb_length + '" id="sale-qty" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">'+
+                '<span class="input-group-text" id="inputGroup-sizing-sm"></span>'+
+              '</div>'+
+            '</td>'+
+            '<td>'+
+              '<div class="input-group input-group-sm mb-3" style="width:100px;">'+
+                '<span class="input-group-text" id="inputGroup-sizing-sm">₹</span>'+
+                '<input name="sale_rate_' + tb_length + '" id="sale-rate" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">'+
+              '</div>'+
+            '</td>'+
+            '<td>'+
+              '<div class="input-group input-group-sm mb-3" style="width:90px;">'+
+                '<input name="sale_dis_' + tb_length + '" id="sale-dis" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">'+
+                '<span class="input-group-text" id="inputGroup-sizing-sm">%</span>'+
+              '</div>'+
+            '</td>'+
+            '<td>'+
+              '<p id="sale-taxable-value" class="text-dark fs-6 fw-normal mb-0">₹--</p>'+
+            '</td>'+
+            '<td id="cgst" style="width:74px;">'+
+              '<p id="sale-tax-cgst" class="text-dark fs-6 fw-normal mb-0">₹--</p>'+
+              '<p class="text-dark fs-6 fw-lighter mb-0">'+
+                '@ <span>--</span>%'+
+              '</p>'+
+            '</td>'+
+            '<td id="sgst" style="width:74px;">'+
+              '<p id="sale-tax-sgst" class="text-dark fs-6 fw-normal mb-0">₹--</p>'+
+              '<p id="sale-tax-sgst-rate" class="text-dark fs-6 fw-lighter mb-0">'+
+                '@ <span>--</span>%'+
+              '</p>'+
+            '</td>'+
+            '<td id="utgst" style="width:70px;" hidden>'+
+              '<p id="sale-tax-utgst" class="text-dark fs-6 fw-normal mb-0">₹--</p>'+
+              '<p id="sale-tax-utgst-rate" class="text-dark fs-6 fw-lighter mb-0">'+
+                '@ <span>--</span>%'+
+              '</p>'+
+            '</td>'+
+            '<td id="igst" style="width:70px;" hidden>'+
+              '<p id="sale-tax-igst" class="text-dark fs-6 fw-normal mb-0">₹--</p>'+
+              '<p id="sale-tax-igst-rate" class="text-dark fs-6 fw-lighter mb-0">'+
+                '@ <span>--</span>%'+
+              '</p>'+
+            '</td>'+
+            '<td>'+
+              '<p id="sale-total" class="text-dark fs-6 fw-normal mb-0">₹--</p>'+
+            '</td>'+
+            '<td>'+
+              '<button type="button" id="sale-del-product" class="mt-1 btn btn-danger btn-sm">'+
+                '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">'+
+                  '<path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>'+
+                '</svg>'+
+              '</button>'+
+            '</td>'+
+          '</tr>';
+        $('#sale-table tr:last').before(row);
+        $('table select, #select-customer').select2();
+        $.fn.gstType();
+      });
+      
+    });
+  </script>
+
+{% endblock %}

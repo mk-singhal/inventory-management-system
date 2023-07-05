@@ -24,6 +24,11 @@ a:focus {
     transition: all 0.3s;
 }
 
+.zoom-hover:hover{
+    transform: scale(1.05);
+    transition: 0.3s;
+}
+
 .navbar {
     padding: 18px 5px;
     background: #fff;
@@ -230,7 +235,7 @@ a.article:hover {
 }
 
 /* When you move the mouse over the icon, change color */
-.fa-user:hover {
+.bi-pencil-square:hover {
     color: #eee;
 }
 
@@ -292,4 +297,67 @@ a.article:hover {
     #sidebarCollapse span {
         display: none;
     }
+}
+
+@page {
+    margin: 0; 
+    padding: 0;  
+}
+@media print {
+    
+    /* html, body {
+        width: 210mm;
+        height: 297mm;
+        visibility: hidden;
+    }
+
+    div .row, div table tr td {
+        break-inside: avoid;
+    }
+    table { page-break-inside:auto }
+    tr    { page-break-inside:avoid; page-break-after:auto }
+    
+    .page {
+        page-break-inside: auto;
+        visibility: visible;
+        margin: 0mm;
+        position: absolute;
+        left: 0;
+        top: 0;
+    } */
+    
+    /* .page {
+        margin: 0mm;
+    } */
+    
+    #sale-table tfoot { 
+        display:table-footer-group;
+    }
+    #sale-table thead { 
+        margin-top:20px;
+        display:table-header-group;
+    }
+    div .row, #sale-table.table tr {
+        page-break-inside: avoid;
+    }
+}
+
+#sale-table.table thead {
+    border-top: 1px solid #c7c8c9;
+    border-bottom: 1px solid #c7c8c9;
+}
+
+#sale-table.table tbody tr:last-child {
+    border-bottom: 1px solid #c7c8c9;
+}
+
+/* table.table tbody tr {
+    max-height: ;
+} */
+
+#sale-table.table tbody tr td,
+#sale-table.table thead tr th,
+#sale-table.table thead {
+    border-left: 1px solid #c7c8c9;
+    border-right: 1px solid #c7c8c9;
 }

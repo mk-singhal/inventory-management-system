@@ -13,26 +13,30 @@
   <form enctype="multipart/form-data" action="" method="POST" class="row g-3 needs-validation" novalidate>
     {% csrf_token %}
     <div class="col-md-4">
-      <label for="name-in" class="form-label">Name*</label>
-      <input type="text" class="form-control" id="name-in" name="name" autocomplete="on" required>
+      <label for="name-in" class="form-label">Company Name*</label>
+      <input type="text" class="form-control" id="name-in" placeholder="Company's registered name" name="name" required>
     </div>
     <div class="col-md-4">
-      <label for="gstin-in" class="form-label">GSTIN</label>
-      <input type="text" class="form-control" id="gstin-in" name="gstin">
+      <label for="gstin-in" class="form-label">GSTIN*</label>
+      <input type="text" class="form-control" id="gstin-in" name="gstin" required>
     </div>
     <div class="col-md-4">
       <label for="mob-in" class="form-label">Mobile Number</label>
       <input type="number" class="form-control" id="mob-in" name="mob_no">
     </div>
     <div class="col-md-6">
-      <label for="add-in" class="form-label">Address</label>
-      <input type="text" class="form-control" id="add-in" name="address">
+      <label for="add1-in" class="form-label">Address Line-1*</label>
+      <input type="text" class="form-control" id="add1-in" placeholder="Company No. , Area , Locality" name="address1" required>
+    </div>
+    <div class="col-md-6">
+      <label for="add2-in" class="form-label">Address Line-2*</label>
+      <input type="text" class="form-control" id="add2-in" placeholder="City , State , Pin Code , Country" name="address2" required>
     </div>
     <div class="col-md-6">
       <label for="email-in" class="form-label">Email</label>
       <input type="email" class="form-control" id="email-in" name="email">
     </div>
-    <div class="col-md-12 mb-3">
+    <div class="col-md-6 mb-3">
       <label for="img-in" class="form-label">Image</label>
       <input type="file" class="form-control" id="img-in" name="pic">
     </div>
