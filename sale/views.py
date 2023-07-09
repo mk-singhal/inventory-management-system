@@ -18,6 +18,11 @@ def calc_order_total(orders):
 
 # Create your views here.
 def sale(request):
+    if request.method == "POST":
+        so = SaleOrder.objects.get(pk = request.POST['orderID'])
+        so.amt_paid = request.POST['amtPaid']
+        so.save()
+
     search_sale = request.GET.get('search_sale')
     if search_sale:
         sale_orders = SaleOrder.objects.filter(
@@ -25,7 +30,7 @@ def sale(request):
             Q(invoice_no__icontains=search_sale) |
             Q(reg_bill_to__name__icontains=search_sale) |
             Q(sale_product__item__name__icontains=search_sale)
-            ).distinct()
+            ).distinct().order_by('-created_on')
     else:
         # If not searched, return default posts
         sale_orders = SaleOrder.objects.all().order_by('-created_on')

@@ -21,15 +21,7 @@ class SaleOrder(models.Model):
         ('3', 'Inter-State (IGST)'),
     )
     gst_sale_type = models.CharField(max_length=10,choices=GSTSaleType,default=1)
-    
-    pay_status_choices = (
-            ('1', 'Unpaid'),
-            # ('2', 'Due'),
-            ('3', 'Partial'),
-            ('4', 'Paid'),
-        )
-    pay_status = models.CharField(max_length=10,choices=pay_status_choices,default=1)    
-    
+   
     reg_bill_to = models.ForeignKey(Customer, on_delete=models.SET(get_del_customer), blank=True, null=True)
     
     unreg_bill_to_name = models.CharField(max_length=50, blank=True, null=True)
@@ -49,6 +41,8 @@ class SaleOrder(models.Model):
     transport_veh_no = models.CharField(max_length=50, null=True, blank=True)
     transport_gstin = models.CharField(max_length=50, null=True, blank=True)
 
+    amt_paid = models.FloatField(default=0)
+
     invoice_no = models.CharField(max_length=16)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
@@ -65,7 +59,7 @@ class SaleOrder(models.Model):
 class SaleOrderDescription(models.Model):
     item = models.ForeignKey(Product, on_delete=models.PROTECT)
     sale_order = models.ForeignKey(SaleOrder, related_name='sale_product', on_delete=models.CASCADE)
-    qty = models.IntegerField(blank=True, null=True)
+    qty = models.IntegerField()
     sell_price = models.FloatField()
     discount = models.FloatField()
     

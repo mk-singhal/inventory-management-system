@@ -15,7 +15,7 @@
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <form style="min-width:30%;" action="{% url 'sale:sale' %}">
       <div class="justify-content-start input-group mb-sm-auto mb-3" style="max-width:100%;">
-        <input type="text" class="form-control" placeholder="Search customer or product" aria-label="Search customer or product" name="search_sale">
+        <input type="text" class="form-control" placeholder="Search by company, invoice no or product" aria-label="Search customer or product" name="search_sale">
         <button class="btn btn-outline-primary" type="submit">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -33,58 +33,119 @@
   <div class="row">
     {% for order in page_obj.object_list %}
     <div class="col-xl-3 col-lg-4 col-md-6 mb-3" style="max-width:75%">
-      <a href="{% url 'sale:view-sale' order.id %}">
+      {% comment %} <button class="btn p-0 m-0" style="width:100%;"> {% endcomment %}
         <div class="zoom-hover card text-black">
+          {% comment %} <div>
+            <button style="position:absolute;right:0;border-top-left-radius: 0;border-bottom-right-radius: 0;" class="p-1 px-2 btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+              </svg>
+            </button>
+          </div> {% endcomment %}
           <div class="card-body pt-2">
-            <div class="text-center mt-1">
-              <h4 class="card-title text-capitalize">
-                {% if order.reg_bill_to == None %}
-                {{ order.unreg_bill_to_name }}
-                {% else %}
-                {{ order.reg_bill_to.name }}
-                {% endif %}
-                <br>
-                <span class="fs-6 m-0 p-0 fw-normal">{{ order.created_on|date:'j F Y'}}</span>
-              </h4>
-            </div>
-            <div class="px-3 py-1" 
-              style="
-                {% if order.created_on|dueornot or order.pay_status != '1' %}
-                  background-image:url(
-                    {% if order.pay_status == '3' %}
-                      {% static 'img/partial.png' %}
-                    {% elif order.pay_status == '4' %}
-                      {% static 'img/paid.png' %}
-                    {% elif order.created_on|dueornot %}
-                      {% static 'img/due.png' %}
-                    {% endif %});
-                  background-repeat: no-repeat;
-                  background-size: contain;
-                  background-position:center;
-                {% endif %}
-                background-color: #eff1f2;
-                height: 25vh;
-                overflow-y: auto;">
-              {% for product in order.sale_product.all %}
-                <div class="d-flex justify-content-between my-2">
-                  <div class="">
-                    {{ product.item.name }}
+            <a class="" href="{% url 'sale:view-sale' order.id %}">
+              <div class="text-center mt-1">
+                <h4 class="card-title text-capitalize">
+                  {% if order.reg_bill_to == None %}
+                  {{ order.unreg_bill_to_name }}
+                  {% else %}
+                  {{ order.reg_bill_to.name }}
+                  {% endif %}
+                  <br>
+                  <span class="fs-6 m-0 p-0 fw-normal">{{ order.created_on|date:'j F Y'}}</span>
+                </h4>
+              </div>
+              <div class="px-3 py-1" 
+                style="
+                  {% if order.created_on|dueornot or order.amt_paid != 0 %}
+                    background-image:url(
+                      {% if order.amt_paid > 0 and order.amt_paid < order_total_price|index:forloop.counter0 %}
+                        {% static 'img/partial.png' %}
+                      {% elif order.amt_paid == order_total_price|index:forloop.counter0 %}
+                        {% static 'img/paid.png' %}
+                      {% elif order.created_on|dueornot %}
+                        {% static 'img/due.png' %}
+                      {% endif %});
+                    background-repeat: no-repeat;
+                    background-size: contain;
+                    background-position:center;
+                  {% endif %}
+                  background-color: #eff1f2;
+                  height: 25vh;
+                  overflow-y: auto;">
+                {% for product in order.sale_product.all %}
+                  <div class="d-flex justify-content-between my-2">
+                    <div class="">
+                      {{ product.item.name }}
+                    </div>
+                    <div class="">
+                      {{ product.qty }}
+                      {{ product.item.measuring_unit_1 }}
+                    </div>
                   </div>
-                  <div class="">
-                    {{ product.qty }}
-                    {{ product.item.measuring_unit_1 }}
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-            <hr class="mb-1 mt-2">
-            <p class="text-dark fw-medium mx-2 mb-1">
-              <span class="text-start">Total</span>
-              <span style="float:right;">₹ {{order_total_price|index:forloop.counter0}}</span>
+                {% endfor %}
+              </div>
+              <hr class="mb-1 mt-2">
+              <p class="text-dark fw-medium mx-2 mb-1">
+                <span class="text-start">Total</span>
+                <span style="float:right;">₹ {{order_total_price|index:forloop.counter0}}</span>
+              </p>
+            </a>
+            <p class="py-auto text-dark fs-6 fw-normal mx-2 mb-1">
+              <span class="text-start">Paid</span>
+              <span style="float:right;">₹ {{ order.amt_paid }}
+                <button type="button" class="p-1 px-2 ms-1 btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal{{forloop.counter0}}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                  </svg>
+                </button>
+              </span>
             </p>
           </div>
         </div>
-      </a>
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal{{forloop.counter0}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form action="" method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Enter the Amount Paid</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row mb-3">
+                    <label for="orderTotal" class="col-sm-3 col-form-label">Order Total</label>
+                    <div class="col-sm-8">
+                      <div class="input-group row">
+                        <div style="width:35px;" class="col-2 input-group-text">₹</div>
+                        <input type="number" readonly disabled class="col form-control" id="orderTotal" value="{{order_total_price|index:forloop.counter0}}">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <label for="amtPaid" class="col-sm-4 col-form-label">Amount Paid</label>
+                    <div class="col-sm-8">
+                      <div class="input-group row">
+                        <div style="width:35px;" class="col-2 input-group-text">₹</div>
+                        <input required step="0.01" name="amtPaid" type="number" class="col form-control" min="0" max="{{order_total_price|index:forloop.counter0}}" id="amtPaid" value="{{order_total_price|index:forloop.counter0}}">
+                      </div>
+                      <div class="form-text">For <span class="fw-medium text-dark">Partial Payment</span> change the above value accordingly</div>
+                    </div>
+                  </div>
+                  <input name="orderID" type="text" readonly class="visually-hidden form-control" aria-labelledby="" value="{{order.id}}">
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      {% comment %} </button> {% endcomment %}
     </div> 
     {% endfor %}
   </div>
