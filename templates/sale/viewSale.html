@@ -199,14 +199,14 @@
                   <td>{{ product.item.measuring_unit_1 }}</td>
                   <td>{{ product.sell_price|indian_num }}</td>
                   <td>{{ product.discount }}%</td>
-                  <td>{{ taxable_value_ls|index:forloop.counter0 }}</td>
+                  <td>{{ product.taxable_value|indian_num }}</td>
                   {% if so.gst_sale_type == '1' %}
-                    <td>{{ halfgst_value_ls|index:forloop.counter0 }}</td>
-                    <td>{{ halfgst_value_ls|index:forloop.counter0 }}</td>
+                    <td>{{ product.gst_value|indian_num:2 }}</td>
+                    <td>{{ product.gst_value|indian_num:2 }}</td>
                   {% else %}
-                    <td>{{ fullgst_value_ls|index:forloop.counter0 }}</td>
+                    <td>{{ product.gst_value|indian_num }}</td>
                   {% endif %}
-                  <td>{{ total_value_ls|index:forloop.counter0 }}</td>
+                  <td>{{ product.product_price|indian_num }}</td>
                 </tr>
               {% endfor %}
               {% comment %} <tr style="line-height: 20px; height: 20px;">
@@ -222,7 +222,6 @@
                 <td id="mu">11800</td>
               </tr> {% endcomment %}
               <tr>
-                {% comment %} <td></td> {% endcomment %}
                 <td></td>
                 <td></td>
                 <td></td>
@@ -256,7 +255,7 @@
                 {% elif so.gst_sale_type == '3' %}
                   <td>{{ total_fullgst_value|indian_num }}</td>
                 {% endif %}
-                <td>{{ sum_total_value|indian_num }}</td>
+                <td>{{ so.order_price|indian_num }}</td>
               </tr>
             </tbody>
           </table>
@@ -271,7 +270,7 @@
           </div>
           <div class="col-5">
             <p class="text-dark fs-6 fw-normal">
-              {{sum_total_value|amt2word}}
+              {{so.order_price|amt2word}}
             </p>
           </div>
 
@@ -286,7 +285,7 @@
             <p class="text-dark fs-6 fw-normal">
               {{ total_taxable_value|indian_num }}<br>
               {{ total_fullgst_value|indian_num }}<br>
-              {{ sum_total_value|indian_num }}
+              {{ so.order_price|indian_num }}
             </p>
           </div>
           

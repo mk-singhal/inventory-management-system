@@ -131,6 +131,11 @@ $(document).ready(function () {
     }
   });
 
+  // sale/sale.html -- Submit the form on change
+  $('#sale-filters').change(function() {
+    this.submit();
+  });
+
   // sale/createSale.html -- Select the Type of Sale i.e.  
   //                         Inter-state or Intra-state
   $.fn.gstType = function() {

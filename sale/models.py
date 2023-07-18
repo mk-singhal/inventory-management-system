@@ -41,7 +41,8 @@ class SaleOrder(models.Model):
     transport_veh_no = models.CharField(max_length=50, null=True, blank=True)
     transport_gstin = models.CharField(max_length=50, null=True, blank=True)
 
-    amt_paid = models.FloatField(default=0)
+    order_price = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    amount_paid = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
     invoice_no = models.CharField(max_length=16)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -59,9 +60,12 @@ class SaleOrder(models.Model):
 class SaleOrderDescription(models.Model):
     item = models.ForeignKey(Product, on_delete=models.PROTECT)
     sale_order = models.ForeignKey(SaleOrder, related_name='sale_product', on_delete=models.CASCADE)
-    qty = models.IntegerField()
-    sell_price = models.FloatField()
-    discount = models.FloatField()
+    qty = models.DecimalField(max_digits=15, decimal_places=0)
+    sell_price = models.DecimalField(max_digits=15, decimal_places=2)
+    discount = models.DecimalField(max_digits=15, decimal_places=2)
+    taxable_value = models.DecimalField(max_digits=15, decimal_places=2)
+    gst_value = models.DecimalField(max_digits=15, decimal_places=2)
+    product_price = models.DecimalField(max_digits=15, decimal_places=2)
     
     def __str__(self):
         return self.item.name

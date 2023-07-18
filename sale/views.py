@@ -1,9 +1,11 @@
+from datetime import datetime, timedelta
+from decimal import Decimal
 from django.shortcuts import render, redirect
 from .models import SaleOrderDescription, SaleOrder, State
 from inventory.models import Product
 from customer.models import Customer
 from django.core.paginator import Paginator
-from django.db.models import Q  # New
+from django.db.models import Q, F  # New
 from babel.numbers import format_currency
 
 
@@ -20,22 +22,67 @@ def calc_order_total(orders):
 def sale(request):
     if request.method == "POST":
         so = SaleOrder.objects.get(pk = request.POST['orderID'])
-        so.amt_paid = request.POST['amtPaid']
+        so.amount_paid = request.POST['amtPaid']
         so.save()
-
+        return redirect('sale:sale')
+    
+    sale_orders = SaleOrder.objects.all()
+    
     search_sale = request.GET.get('search_sale')
     if search_sale:
-        sale_orders = SaleOrder.objects.filter(
+        sale_orders = sale_orders.filter(
             Q(unreg_bill_to_name__icontains=search_sale) |
             Q(invoice_no__icontains=search_sale) |
             Q(reg_bill_to__name__icontains=search_sale) |
             Q(sale_product__item__name__icontains=search_sale)
-            ).distinct().order_by('-created_on')
-    else:
-        # If not searched, return default posts
-        sale_orders = SaleOrder.objects.all().order_by('-created_on')
+            ).distinct()
+        print("\nSearch Sale: ", search_sale, sale_orders)
+
+    search_date = request.GET.get('search_date')
+    if search_date:
+        sale_orders = sale_orders.filter(
+            created_on__date=search_date
+            )
+        print("\nSearch Date: ", search_date, sale_orders)
     
-    order_total_price_ls = calc_order_total(sale_orders)
+    search_due = request.GET.get('search_due')
+    search_partial = request.GET.get('search_partial')
+    search_paid = request.GET.get('search_paid')
+    
+    sale_orders_due = SaleOrder.objects.none()
+    sale_orders_partial = SaleOrder.objects.none()
+    sale_orders_paid = SaleOrder.objects.none()
+    flg = False
+    
+    date_from = datetime.now() - timedelta(days=1)
+    if search_due == 'on':
+        sale_orders_due = sale_orders.filter(
+            amount_paid__gte=0,
+            amount_paid__lt=0.01,
+            created_on__lte=date_from
+            )
+        # print("\nSearch DUE: ", search_due, sale_orders)
+        flg = True
+    
+    if search_partial == 'on':
+        sale_orders_partial = sale_orders.filter(
+            amount_paid__lt=F('order_price'),
+            amount_paid__gt=0,
+            )
+        # print("\nSearch Partial: ", search_partial, sale_orders)
+        flg = True
+    
+    if search_paid == 'on':
+        sale_orders_paid = sale_orders.filter(
+            amount_paid=F('order_price'),
+            )
+        # print("\nSearch Paid: ", search_paid, sale_orders)
+        flg = True
+        
+    if flg:
+        sale_orders_tmp = sale_orders_due.union(sale_orders_partial)
+        sale_orders = sale_orders_tmp.union(sale_orders_paid)
+    sale_orders = sale_orders.order_by('-created_on')
     
     p = Paginator(sale_orders, 12)  # creating a paginator object
     # getting the desired page number from url
@@ -48,12 +95,18 @@ def sale(request):
     except EmptyPage:
         # if page is empty then return last page
         page_obj = p.page(p.num_pages)
+    
+    # print('\n\n%%%%', bool(search_sale), bool(search_date), search_due, search_partial, search_paid)
     return render(  
                     request, 
                     'sale/sale.html', 
                     { 
                         'sb':3,
-                        'order_total_price':order_total_price_ls,
+                        'sale_search': search_sale,
+                        'date_search': search_date,
+                        'due_status': search_due,
+                        'partial_status': search_partial,
+                        'paid_status': search_paid,
                         'page_obj': page_obj,
                     }
                 )
@@ -62,44 +115,26 @@ def sale(request):
 def view_sale(request, sale_order_id):
     so = SaleOrder.objects.get(pk=sale_order_id)
     
-    taxable_value_ls = []
-    halfgst_value_ls = []
-    fullgst_value_ls = []
-    total_value_ls = []
+    # taxable_value_ls = []
+    # halfgst_value_ls = []
+    # fullgst_value_ls = []
+    # total_value_ls = []
     total_taxable_value = 0
     total_halfgst_value = 0
     total_fullgst_value = 0
-    sum_total_value = 0
+    # sum_total_value = 0
     
     for product in so.sale_product.all():
+        total_taxable_value += product.taxable_value
+        total_fullgst_value += product.gst_value
+        total_halfgst_value += product.gst_value/Decimal(2)
         
-        taxable_value = product.qty*product.sell_price*(1-product.discount*0.01)
-        taxable_value_ls.append( format_currency(taxable_value, 'INR', locale='en_IN') )
-        total_taxable_value += taxable_value
-        
-        halfgst_value = product.qty*product.sell_price*product.item.gst*0.01/2
-        halfgst_value_ls.append( format_currency(round(halfgst_value, 2), 'INR', locale='en_IN') )
-        total_halfgst_value += halfgst_value
-        
-        fullgst_value = product.qty*product.sell_price*product.item.gst*0.01
-        fullgst_value_ls.append( format_currency(round(fullgst_value, 2), 'INR', locale='en_IN') )
-        total_fullgst_value += fullgst_value
-        
-        total_value = taxable_value*(1+product.item.gst*0.01)
-        total_value_ls.append( format_currency(round(total_value, 2), 'INR', locale='en_IN') )
-        sum_total_value += total_value
-
     return render(request, 'sale/viewSale.html', {
         'sb':3,
         'so':so,
-        'taxable_value_ls':taxable_value_ls,
-        'halfgst_value_ls':halfgst_value_ls,
-        'fullgst_value_ls':fullgst_value_ls,
-        'total_value_ls':total_value_ls,
-        'total_taxable_value':round(total_taxable_value, 2),
-        'total_halfgst_value':round(total_halfgst_value, 2),
-        'total_fullgst_value':round(total_fullgst_value, 2),
-        'sum_total_value':round(sum_total_value, 2),
+        'total_taxable_value':total_taxable_value,
+        'total_halfgst_value':total_halfgst_value,
+        'total_fullgst_value':total_fullgst_value,
     })
 
 def increment_invoice_number():
@@ -160,6 +195,7 @@ def create_sale(request):
         
         so_instance.save()
         total_product = request.POST['total_product']
+        total_order_price = 0
         
         for i in range(int(total_product)):
             sod_instance = SaleOrderDescription()
@@ -167,12 +203,17 @@ def create_sale(request):
                 pk=request.POST[f'select_products_{i}']
             )
             sod_instance.sale_order = so_instance
-            sod_instance.qty = request.POST[f'sale_qty_{i}']
-            sod_instance.sell_price = request.POST[f'sale_rate_{i}']
-            sod_instance.discount = request.POST[f'sale_dis_{i}']
-                        
+            sod_instance.qty = int(request.POST[f'sale_qty_{i}'])
+            sod_instance.sell_price = float(request.POST[f'sale_rate_{i}'])
+            sod_instance.discount = float(request.POST[f'sale_dis_{i}'])
+            sod_instance.taxable_value = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount) ), 2)
+            sod_instance.gst_value = round(( (sod_instance.item.gst*0.01)*(sod_instance.qty*sod_instance.sell_price) ), 2)
+            sod_instance.product_price = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount)*(1+sod_instance.item.gst*0.01) ), 2)
+            total_order_price += sod_instance.product_price
             sod_instance.save()
         
+        so_instance.order_price = round(total_order_price, 2)
+        so_instance.save()
         return redirect('sale:view-sale', so_instance.id)
     return render(request, 'sale/createSale.html', 
                   {'sb':3, 
