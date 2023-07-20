@@ -30,8 +30,6 @@
       <select id="create-sale-select-gst" class="form-select" aria-label="Select applicable GST">
         {% for choice in sale_choices %}
           <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-          {% comment %} <option value="2">Intra-State (UTGST)</option> {% endcomment %}
-          {% comment %} <option value="3">Inter-State (IGST)</option> {% endcomment %}
         {% endfor %}
       </select>
     </div>
@@ -206,19 +204,19 @@
                   </td>
                   <td id="mu">
                     <div class="input-group input-group-sm mb-3" style="width:120px;">
-                      <input name="sale_qty_0" id="sale-qty" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
+                      <input name="sale_qty_0" id="sale-qty" type="number" min="1" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
                       <span class="input-group-text" id="inputGroup-sizing-sm"></span>
                     </div>
                   </td>
                   <td>
                     <div class="input-group input-group-sm mb-3" style="width:100px;">
                       <span class="input-group-text" id="inputGroup-sizing-sm">₹</span>
-                      <input name="sale_rate_0" id="sale-rate" type="number" step=".01" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
+                      <input name="sale_rate_0" id="sale-rate" type="number" step=".01" min="0" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
                     </div>
                   </td>
                   <td>
                     <div class="input-group input-group-sm mb-3" style="width:90px;">
-                      <input name="sale_dis_0" id="sale-dis" type="number" step=".01" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
+                      <input name="sale_dis_0" id="sale-dis" type="number" step=".1" min="0" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
                       <span class="input-group-text" id="inputGroup-sizing-sm">%</span>
                     </div>
                   </td>
@@ -375,19 +373,19 @@
             '</td>'+
             '<td id="mu">'+
               '<div class="input-group input-group-sm mb-3" style="width:120px;">'+
-                '<input name="sale_qty_' + tb_length + '" id="sale-qty" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">'+
+                '<input name="sale_qty_' + tb_length + '" id="sale-qty" type="number" min="1" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>'+
                 '<span class="input-group-text" id="inputGroup-sizing-sm"></span>'+
               '</div>'+
             '</td>'+
             '<td>'+
               '<div class="input-group input-group-sm mb-3" style="width:100px;">'+
                 '<span class="input-group-text" id="inputGroup-sizing-sm">₹</span>'+
-                '<input name="sale_rate_' + tb_length + '" id="sale-rate" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">'+
+                '<input name="sale_rate_' + tb_length + '" id="sale-rate" type="number" step=".01" min="0" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>'+
               '</div>'+
             '</td>'+
             '<td>'+
               '<div class="input-group input-group-sm mb-3" style="width:90px;">'+
-                '<input name="sale_dis_' + tb_length + '" id="sale-dis" type="number" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm">'+
+                '<input name="sale_dis_' + tb_length + '" id="sale-dis" type="number" step=".1" min="0" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>'+
                 '<span class="input-group-text" id="inputGroup-sizing-sm">%</span>'+
               '</div>'+
             '</td>'+

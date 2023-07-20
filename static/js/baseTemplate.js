@@ -8,7 +8,7 @@ var format = new Intl.NumberFormat('en-IN', {
   style: 'currency',
   currency: 'INR',
   minimumFractionDigits: 0,
-  maximumFractionDigits: 2,
+  maximumFractionDigits: 3,
 });
 
 // Converts amount to words in Indian Rupee System (no decimals)
@@ -167,6 +167,7 @@ $(document).ready(function () {
   $.fn.populateRowCalc = function() { 
     let total_taxable_val = 0;
     let total_gst = 0;
+    let order_total = 0;
     console.log('Function Called !!');
     $('#sale-table tbody tr').each(function(i) {
       if (i != $('#sale-table tr').length-2) {
@@ -183,9 +184,9 @@ $(document).ready(function () {
           let qty = $(this).children('td').eq(1).find('input').val();
           let rate = $(this).children('td').eq(2).find('input').val();
           let discount = $(this).children('td').eq(3).find('input').val();
-          let taxable_val = (qty*rate) - ((discount*0.01)*(qty*rate));
-          let gst = gst_rate*0.01*taxable_val;
-          let total = taxable_val + gst;
+          let taxable_val = (((qty*rate) - ((discount*0.01)*(qty*rate)))).toFixed(2);
+          let gst = (gst_rate*0.01*taxable_val).toFixed(2);
+          let total = ((qty*rate)*(1-discount)*(1+gst_rate*0.01)).toFixed(2);
           $(this).find('#sale-taxable-value').html(format.format(taxable_val));
           $(this).find('#sale-tax-cgst').html(format.format(gst/2));
           $(this).find('#sale-tax-sgst').html(format.format(gst/2));
@@ -193,8 +194,10 @@ $(document).ready(function () {
           $(this).find('#sale-tax-igst').html(format.format(gst));
           $(this).find('#sale-total').html(format.format(total));
           console.log('Called !!');
-          total_taxable_val = total_taxable_val + (qty*rate) - ((discount*0.01)*(qty*rate));
-          total_gst = total_gst + gst_rate*0.01*taxable_val;
+          total_taxable_val = total_taxable_val + parseFloat(taxable_val);
+          total_gst = total_gst + parseFloat(gst);
+          order_total = order_total + parseFloat(total);
+          console.log("Taxable Value:", taxable_val, "\nGST:", gst, "\nTotal Value:", total);
         }
       }
     });
@@ -203,12 +206,12 @@ $(document).ready(function () {
     $('#sale-table tbody tr:last').children('td').eq(6).html(format.format(total_gst/2));
     $('#sale-table tbody tr:last').children('td').eq(7).html(format.format(total_gst));
     $('#sale-table tbody tr:last').children('td').eq(8).html(format.format(total_gst));
-    $('#sale-table tbody tr:last').children('td').eq(9).html(format.format(total_taxable_val+total_gst));
+    $('#sale-table tbody tr:last').children('td').eq(9).html(format.format(order_total));
     $('#sale-taxable-amt').html(format.format(total_taxable_val));
     $('#sale-total-tax').html(format.format(total_gst));
-    $('#sale-total-amt').html(format.format(total_taxable_val+total_gst));
+    $('#sale-total-amt').html(format.format(order_total));
     
-    var splittedNum = ((total_taxable_val+total_gst).toFixed(2)).toString().split('.');
+    var splittedNum = (order_total).toString().split('.');
     // console.log(splittedNum);
     var nonDecimal=splittedNum[0];
     if (splittedNum[1] && splittedNum[1] != '00') {
@@ -227,10 +230,6 @@ $(document).ready(function () {
   //                         fields after a change in Qty, Rate 
   //                         or Discount
   $('table#sale-table').on('change', function() {
-    $.fn.populateRowCalc();
-  });
-
-  $('table#sale-table').on('change', 'select', function() {
     $.fn.populateRowCalc();
   });
 
@@ -271,6 +270,7 @@ $(document).ready(function () {
       // Enable Select-Customer
       $('#select-customer').prop('disabled', false);
       $('#select-customer').next(".select2-container").show();
+      $('#select-customer').val(null).trigger("change")
       // Enable Name Field
       $('#sale-bill-to').children('input').eq(0).prop('hidden', true);
       $('#sale-bill-to').children('input').eq(0).prop('disabled', true);
@@ -427,6 +427,7 @@ $(document).ready(function () {
         curr_product.closest('tr').children('td').eq(7).find('span').html(data['gst']);
         curr_product.closest('tr').children('td').eq(8).find('span').html(data['gst']);
         curr_product.closest('tr').children('td').eq(2).find('input').val(data['price']);
+        $.fn.populateRowCalc();
       }
     });
     return false;

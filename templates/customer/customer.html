@@ -50,7 +50,11 @@
         <td>{{ p.name }}</td>
         <td>{% if p.gstin %}{{ p.gstin }}{% else %}-{% endif %}</td>
         <td>{% if p.mob_no %}{{ p.mob_no }}{% else %}-{% endif %}</td>
-        <td>{% if p.address %}{{ p.address }}{% else %}-{% endif %}</td>
+        <td>
+          {% if p.address1 %}{{ p.address1 }}{% else %}-{% endif %}
+          <br>
+          {% if p.address2 %}{{ p.address2 }}{% else %}-{% endif %}
+        </td>
         <td>{% if p.email %}{{ p.email }}{% else %}-{% endif %}</td>
         <td>
           <a href="{% url 'customer:edit-customer' p.id %}" class="btn">

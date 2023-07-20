@@ -51,12 +51,12 @@
       </div>
       <div class="col-md-9 px-md-0">
         <div class="row">
-          <label for="name-in" class="form-label col-md-2 my-auto">Name*</label>
+          <label for="name-in" class="form-label col-md-3 my-auto">Company Name*</label>
           <div class=" col-md-4 ps-0 mb-3">
             <input type="text" class="form-control" id="name-in" name="name" value="{{ customer.name }}" required>
           </div>
-          <label for="gstin-in" class="form-label col-md-2 my-auto">GSTIN</label>
-          <div class=" col-md-4 ps-0 mb-3">
+          <label for="gstin-in" class="form-label col-md-2 my-auto">GSTIN*</label>
+          <div class=" col-md-3 ps-0 mb-3">
             <input type="text" class="form-control" id="gstin-in" name="gstin" value="{% if customer.gstin %}{{ customer.gstin }}{% endif %}">
           </div>
         </div>
@@ -79,12 +79,14 @@
       </div>
     </div>
     <div class="row px-0 mt-md-3">
-      {% comment %} <div class="col-md-12"> {% endcomment %}
-          <label for="add-in" class="col-md-2 my-auto form-label">Address</label>
-          <div class="col-md-10 px-md-0">
-            <input type="text" class="form-control" id="add-in" name="address" value="{% if customer.address %}{{ customer.address }}{% endif %}">
-          </div>
-      {% comment %} </div> {% endcomment %}
+      <label for="add-in-1" class="col-md-2 my-auto form-label">Address Line-1*</label>
+      <div class="col-md-4 px-md-0">
+        <input type="text" class="form-control" id="add-in" name="address1" value="{% if customer.address1 %}{{ customer.address1 }}{% endif %}" required>
+      </div>
+      <label for="add-in-2" class="col-md-2 my-auto form-label">Address Line-2*</label>
+      <div class="col-md-4 px-md-0">
+        <input type="text" class="form-control" id="add-in" name="address2" value="{% if customer.address2 %}{{ customer.address2 }}{% endif %}" required>
+      </div>
     </div>
     <div class="btn-group mt-4">
       <button type="submit" class="rounded mx-md-4 col-md-9 btn btn-success">Save Changes</button>

@@ -212,7 +212,7 @@ def create_sale(request):
             total_order_price += sod_instance.product_price
             sod_instance.save()
         
-        so_instance.order_price = round(total_order_price, 2)
+        so_instance.order_price = total_order_price
         so_instance.save()
         return redirect('sale:view-sale', so_instance.id)
     return render(request, 'sale/createSale.html', 
