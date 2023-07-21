@@ -186,7 +186,7 @@ $(document).ready(function () {
           let discount = $(this).children('td').eq(3).find('input').val();
           let taxable_val = (((qty*rate) - ((discount*0.01)*(qty*rate)))).toFixed(2);
           let gst = (gst_rate*0.01*taxable_val).toFixed(2);
-          let total = ((qty*rate)*(1-discount)*(1+gst_rate*0.01)).toFixed(2);
+          let total = ((qty*rate)*(1-discount*0.01)*(1+gst_rate*0.01)).toFixed(2);
           $(this).find('#sale-taxable-value').html(format.format(taxable_val));
           $(this).find('#sale-tax-cgst').html(format.format(gst/2));
           $(this).find('#sale-tax-sgst').html(format.format(gst/2));
@@ -427,6 +427,8 @@ $(document).ready(function () {
         curr_product.closest('tr').children('td').eq(7).find('span').html(data['gst']);
         curr_product.closest('tr').children('td').eq(8).find('span').html(data['gst']);
         curr_product.closest('tr').children('td').eq(2).find('input').val(data['price']);
+        curr_product.closest('tr').children('td').eq(1).find('input').attr({"max": data['qty']});
+        curr_product.closest('tr').children('td').eq(1).find('.invalid-feedback').html("Qty should be in range [1, " + data['qty'] + "] !!");
         $.fn.populateRowCalc();
       }
     });

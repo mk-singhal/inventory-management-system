@@ -59,6 +59,7 @@ def sale(request):
         sale_orders_due = sale_orders.filter(
             amount_paid__gte=0,
             amount_paid__lt=0.01,
+            order_price__gt=0,
             created_on__lte=date_from
             )
         # print("\nSearch DUE: ", search_due, sale_orders)
@@ -206,9 +207,9 @@ def create_sale(request):
             sod_instance.qty = int(request.POST[f'sale_qty_{i}'])
             sod_instance.sell_price = float(request.POST[f'sale_rate_{i}'])
             sod_instance.discount = float(request.POST[f'sale_dis_{i}'])
-            sod_instance.taxable_value = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount) ), 2)
+            sod_instance.taxable_value = round(( (1-sod_instance.discount*0.01)*(sod_instance.qty*sod_instance.sell_price) ), 2)
             sod_instance.gst_value = round(( (sod_instance.item.gst*0.01)*(sod_instance.qty*sod_instance.sell_price) ), 2)
-            sod_instance.product_price = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount)*(1+sod_instance.item.gst*0.01) ), 2)
+            sod_instance.product_price = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount*0.01)*(1+sod_instance.item.gst*0.01) ), 2)
             total_order_price += sod_instance.product_price
             sod_instance.save()
         

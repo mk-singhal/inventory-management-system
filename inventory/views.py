@@ -98,5 +98,6 @@ def get_product(request, product_id):
     product_dict['hsn_code'] = product.hsn_code
     product_dict['mu_1'] = product.measuring_unit_1
     product_dict['price'] = product.price
+    product_dict['qty'] = product.qty
     
     return HttpResponse(json.dumps(product_dict), content_type="application/json")

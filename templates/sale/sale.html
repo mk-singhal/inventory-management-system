@@ -67,7 +67,7 @@
             </div>
             <div class="px-3 py-1" 
               style="
-                {% if order.created_on|dueornot or order.amount_paid != 0 %}
+                {% if order.created_on|dueornot or order.amount_paid != 0 or order.order_price == 0 %}
                   background-image:url(
                     {% if order.amount_paid > 0 and order.amount_paid < order.order_price %}
                       {% static 'img/partial.png' %}

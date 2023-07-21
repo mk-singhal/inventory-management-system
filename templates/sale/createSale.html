@@ -191,7 +191,7 @@
                     <select name="select_product_0" style="min-width:120px;" aria-label="select product" required>
                       <option value="">Choose*</option>
                       {% for p in product %}
-                      <option value="{{ p.id }}">{{ p.name }}</option>
+                      <option value="{{ p.id }}" {% if p.qty == 0 %}disabled{% endif %}>{{ p.name }}</option>
                       {% endfor %}
                     </select>
                     <div class="invalid-feedback">
@@ -206,6 +206,7 @@
                     <div class="input-group input-group-sm mb-3" style="width:120px;">
                       <input name="sale_qty_0" id="sale-qty" type="number" min="1" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>
                       <span class="input-group-text" id="inputGroup-sizing-sm"></span>
+                      <div class="invalid-feedback"></div>
                     </div>
                   </td>
                   <td>
@@ -360,7 +361,7 @@
               '<select name="select_product_' + tb_length + '" style="min-width:120px;" aria-label="select product" required>'+
                 '<option value="">Choose*</option>'+
                 '{% for p in product %}'+
-                '<option value="{{ p.id }}">{{ p.name }}</option>'+
+                '<option value="{{ p.id }}" {% if p.qty == 0 %}disabled{% endif %}>{{ p.name }}</option>'+
                 '{% endfor %}'+
               '</select>'+
               '<div class="invalid-feedback">'+
@@ -375,6 +376,7 @@
               '<div class="input-group input-group-sm mb-3" style="width:120px;">'+
                 '<input name="sale_qty_' + tb_length + '" id="sale-qty" type="number" min="1" value="0" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm" required>'+
                 '<span class="input-group-text" id="inputGroup-sizing-sm"></span>'+
+                '<div class="invalid-feedback"></div>'+
               '</div>'+
             '</td>'+
             '<td>'+
