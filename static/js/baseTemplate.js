@@ -159,7 +159,9 @@ $(document).ready(function () {
       $('thead tr th#igst, tbody tr td#igst').attr('hidden', false);
     }
   }
-
+  
+  // sale/createSale.html -- Select the Type of Sale i.e.  
+  //                         Inter-state or Intra-state
   $('#create-sale-select-gst').on('change', function() {
     $.fn.gstType();
   });

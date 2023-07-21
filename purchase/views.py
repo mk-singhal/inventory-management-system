@@ -84,73 +84,16 @@ def create_purchase(request):
         
         for i in range(int(total_product)):
             pod_instance = PurchaseOrderDescription()
-            pod_instance.item = Product.objects.get(
+            inventory_product = Product.objects.get(
                 pk=request.POST[f'select_products_{i}']
             )
+            pod_instance.item = inventory_product
             pod_instance.purchase_order = po_instance
             pod_instance.qty = request.POST[f'qty_{i}']
             pod_instance.cost_price = request.POST[f'cost_price_{i}']
-                        
             pod_instance.save()
+            inventory_product.qty += int(pod_instance.qty)
+            inventory_product.save()
         
         return redirect('purchase:view-purchase', po_instance.id)
     return render(request, 'purchase/createPurchase.html', {'sb':5, 'product':product, 'seller':seller})
-
-def edit_purchase(request, purchase_order_id):
-    
-    po = PurchaseOrder.objects.get(pk=purchase_order_id)
-    
-    product = Product.objects.all()
-    seller = Seller.objects.all()
-    if request.method == "POST":
-        seller_id = request.POST['select_seller']
-        
-        total_product = int(request.POST['total_product'])
-        
-        po.seller = Seller.objects.get(pk=seller_id)
-        po.updated_by = request.user
-        po.save()
-        
-        i=0
-        j=len(po.product.all()) - total_product
-        
-        for pod in po.product.all():
-            if j > 0:
-                pod.delete()
-            else:
-                break
-        
-        for pod in po.product.all():
-            pod.item = Product.objects.get(
-                pk=request.POST[f'select_products_{i}']
-            )
-            pod.qty = request.POST[f'qty_{i}']
-            pod.cost_price = request.POST[f'cost_price_{i}']
-            pod.save()
-            i += 1
-            
-        if len(po.product.all()) < total_product:
-            for _ in range(total_product - len(po.product.all())):
-                pod_instance = PurchaseOrderDescription()
-                pod_instance.item = Product.objects.get(
-                    pk=request.POST[f'select_products_{i}']
-                )
-                pod_instance.purchase_order = po
-                pod_instance.qty = request.POST[f'qty_{i}']
-                pod_instance.cost_price = request.POST[f'cost_price_{i}']                
-                
-                pod_instance.save()
-                i += 1
-        
-        return redirect('purchase:view-purchase', po.id)
-    return render(request, 'purchase/editPurchase.html', {
-        'sb':5, 
-        'product':product,
-        'seller':seller,
-        'po':po
-    })
-
-def del_purchase(request, purchase_order_id):
-    po = PurchaseOrder.objects.get(pk=purchase_order_id)
-    po.delete()
-    return redirect('purchase:purchase')

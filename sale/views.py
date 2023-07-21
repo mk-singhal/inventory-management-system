@@ -9,15 +9,6 @@ from django.db.models import Q, F  # New
 from babel.numbers import format_currency
 
 
-def calc_order_total(orders):
-    order_price_ls = []
-    for order in orders:
-        order_price = 0
-        for product in order.sale_product.all():
-            order_price += (product.sell_price * product.qty * (1 - product.discount*0.01))*(1 + product.item.gst*0.01)
-        order_price_ls.append(round(order_price, 2))
-    return order_price_ls
-
 # Create your views here.
 def sale(request):
     if request.method == "POST":
@@ -36,14 +27,14 @@ def sale(request):
             Q(reg_bill_to__name__icontains=search_sale) |
             Q(sale_product__item__name__icontains=search_sale)
             ).distinct()
-        print("\nSearch Sale: ", search_sale, sale_orders)
+        # print("\nSearch Sale: ", search_sale, sale_orders)
 
     search_date = request.GET.get('search_date')
     if search_date:
         sale_orders = sale_orders.filter(
             created_on__date=search_date
             )
-        print("\nSearch Date: ", search_date, sale_orders)
+        # print("\nSearch Date: ", search_date, sale_orders)
     
     search_due = request.GET.get('search_due')
     search_partial = request.GET.get('search_partial')
@@ -115,15 +106,9 @@ def sale(request):
 # Create your views here.
 def view_sale(request, sale_order_id):
     so = SaleOrder.objects.get(pk=sale_order_id)
-    
-    # taxable_value_ls = []
-    # halfgst_value_ls = []
-    # fullgst_value_ls = []
-    # total_value_ls = []
     total_taxable_value = 0
     total_halfgst_value = 0
     total_fullgst_value = 0
-    # sum_total_value = 0
     
     for product in so.sale_product.all():
         total_taxable_value += product.taxable_value
@@ -167,8 +152,8 @@ def create_sale(request):
     invoice_number = increment_invoice_number()
     
     if request.method == "POST":
-        print('#########', request.POST)
-        print("\n\n$$$$$$$$$", request.POST['customer_registered'])
+        # print('#########', request.POST)
+        # print("\n\n$$$$$$$$$", request.POST['customer_registered'])
         so_instance = SaleOrder()
         so_instance.invoice_no = invoice_number
         so_instance.gst_sale_type = request.POST['gst_sale_type']
@@ -200,9 +185,10 @@ def create_sale(request):
         
         for i in range(int(total_product)):
             sod_instance = SaleOrderDescription()
-            sod_instance.item = Product.objects.get(
+            inventory_product = Product.objects.get(
                 pk=request.POST[f'select_products_{i}']
             )
+            sod_instance.item = inventory_product
             sod_instance.sale_order = so_instance
             sod_instance.qty = int(request.POST[f'sale_qty_{i}'])
             sod_instance.sell_price = float(request.POST[f'sale_rate_{i}'])
@@ -212,7 +198,9 @@ def create_sale(request):
             sod_instance.product_price = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount*0.01)*(1+sod_instance.item.gst*0.01) ), 2)
             total_order_price += sod_instance.product_price
             sod_instance.save()
-        
+            inventory_product.qty -= sod_instance.qty
+            inventory_product.save()
+
         so_instance.order_price = total_order_price
         so_instance.save()
         return redirect('sale:view-sale', so_instance.id)
@@ -225,57 +213,3 @@ def create_sale(request):
                    'invoice_number':invoice_number,
                    }
                   )
-
-def edit_sale(request, sale_order_id):
-    
-    po = SaleOrder.objects.get(pk=sale_order_id)
-    
-    product = Product.objects.all()
-    customer = Customer.objects.all()
-    if request.method == "POST":
-        customer_id = request.POST['select_customer']
-        
-        total_product = int(request.POST['total_product'])
-        
-        po.customer = Customer.objects.get(pk=customer_id)
-        po.updated_by = request.user
-        po.save()
-        
-        i=0
-        j=len(po.product.all()) - total_product
-        
-        for pod in po.product.all():
-            if j > 0:
-                pod.delete()
-            else:
-                break
-        
-        for pod in po.product.all():
-            pod.item = Product.objects.get(
-                pk=request.POST[f'select_products_{i}']
-            )
-            pod.qty = request.POST[f'qty_{i}']
-            pod.cost_price = request.POST[f'cost_price_{i}']
-            pod.save()
-            i += 1
-            
-        if len(po.product.all()) < total_product:
-            for _ in range(total_product - len(po.product.all())):
-                pod_instance = SaleOrderDescription()
-                pod_instance.item = Product.objects.get(
-                    pk=request.POST[f'select_products_{i}']
-                )
-                pod_instance.sale_order = po
-                pod_instance.qty = request.POST[f'qty_{i}']
-                pod_instance.cost_price = request.POST[f'cost_price_{i}']                
-                
-                pod_instance.save()
-                i += 1
-        
-        return redirect('sale:view-sale', po.id)
-    return render(request, 'sale/editSale.html', {
-        'sb':3,
-        'product':product,
-        'customer':customer,
-        'po':po
-    })
