@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect, HttpResponse
 import json
 from .models import Product
 from django.core.paginator import Paginator
-from django.db.models import Q  # New
+from django.db.models import Q, ProtectedError
 from django.db.models.functions import Lower
-
+from django.contrib import messages
 
 # Create your views here.
 def inventory(request):
@@ -36,15 +36,11 @@ def add_product(request):
         # print("\n\n##################", request.POST, request.FILES['img'])
         instance = Product()
         instance.name = request.POST['name']
-        # instance.pic = request.FILES['img']
         if bool(request.FILES.get('img', False)) == True:
             instance.pic = request.FILES['img']
         instance.hsn_code = request.POST['hsn']
         instance.qty = request.POST['actual_qty']
-        # instance.qty_billed = request.POST['gst_qty']
         instance.min_stock_alarm = request.POST['min_stock_alarm']
-        # instance.surplus_alarm = request.POST['surplus_alarm']
-        # instance.defecit_alarm = request.POST['defecit_alarm']
         instance.measuring_unit_1 = request.POST['mu_1']
         if (request.POST['mu_2'] != ''): 
             instance.measuring_unit_2 = request.POST['mu_2']
@@ -52,29 +48,45 @@ def add_product(request):
             instance.measuring_unit_relation = request.POST['mr']
         instance.price = request.POST['price']
         instance.gst = request.POST['gst']
-        instance.save()
-        
-        return redirect('inventory:inventory')
+        try:
+            instance.save()
+            messages.success(request, "Product added successfully.")
+            return redirect('inventory:inventory')
+        except:
+            messages.error(request, "Error, product not added!")
     return render(request, 'inventory/addProduct.html', {'sb':2})
 
 def delete_product(request, product_id):
-    product_instance = Product.objects.get(pk=product_id)
-    product_instance.delete()
-    return redirect('inventory:inventory')
+    try:
+        product_instance = Product.objects.get(pk=product_id)
+    except:
+        messages.error(request, "Product not found!")
+        return redirect('inventory:inventory')
+    
+    try:
+        product_instance.delete()
+        messages.success(request, "Product successfully deleted.")
+    except ProtectedError:
+        messages.error(request, "Product can't be deleted!!")
+    except:
+        messages.error(request, "Error while deleting the product!")
+    finally:
+        return redirect('inventory:inventory')
 
 def edit_product(request, product_id):
-    product_instance = Product.objects.get(pk=product_id)
+    try:
+        product_instance = Product.objects.get(pk=product_id)
+    except:
+        messages.error(request, "Product not found!")
+        return redirect('inventory:inventory')
+    
     if request.method == 'POST':
         # print("\n\n##################", request.POST, "\n$$$$$$$$", bool(request.FILES.get('img', False)))
         product_instance.name = request.POST['name']
         if bool(request.FILES.get('img', False)) == True:
             product_instance.pic = request.FILES['img']
         product_instance.hsn_code = request.POST['hsn']
-        # product_instance.qty = request.POST['actual_qty']
-        # product_instance.qty_billed = request.POST['gst_qty']
         product_instance.min_stock_alarm = request.POST['min_stock_alarm']
-        # product_instance.surplus_alarm = request.POST['surplus_alarm']
-        # product_instance.defecit_alarm = request.POST['defecit_alarm']
         product_instance.measuring_unit_1 = request.POST['mu_1']
         if (request.POST['mu_2'] == ''): 
             product_instance.measuring_unit_2 = None
@@ -84,9 +96,12 @@ def edit_product(request, product_id):
             product_instance.measuring_unit_relation = request.POST['mr']
         product_instance.price = request.POST['price']
         product_instance.gst = request.POST['gst']
-        product_instance.save()
-        return redirect('inventory:inventory')
-        
+        try:
+            product_instance.save()
+            messages.success(request, "Edits successfull.")
+            return redirect('inventory:inventory')
+        except:
+            messages.error(request, "Error while editing the product!")
     return render(request, 'inventory/editProduct.html', {'sb':2, 'product':product_instance})
 
 def get_product(request, product_id):

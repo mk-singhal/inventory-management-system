@@ -4,6 +4,7 @@ from inventory.models import Product
 from seller.models import Seller
 from django.core.paginator import Paginator
 from django.db.models import Q  # New
+from django.contrib import messages
 
 
 # Create your views here.
@@ -40,7 +41,11 @@ def purchase(request):
 
 # Create your views here.
 def view_purchase(request, purchase_order_id):
-    po = PurchaseOrder.objects.get(pk=purchase_order_id)
+    try:
+        po = PurchaseOrder.objects.get(pk=purchase_order_id)
+    except:
+        messages.error(request, "Purchase-Order not found!")
+        return redirect('purchase:purchase')
     
     product_taxable_value_ls = []
     product_gst_ls = []
@@ -72,28 +77,58 @@ def view_purchase(request, purchase_order_id):
 def create_purchase(request):
     product = Product.objects.all()
     seller = Seller.objects.all()
+    
     if request.method == "POST":
         seller_id = request.POST['select_seller']
-        
         total_product = request.POST['total_product']
         
         po_instance = PurchaseOrder()
-        po_instance.seller = Seller.objects.get(pk=seller_id)
+    
+        try:
+            po_instance.seller = Seller.objects.get(pk=seller_id)
+        except:
+            messages.error(request, "Seller not Found!!")
+            return render(request, 'purchase/createPurchase.html', {'sb':5, 'product':product, 'seller':seller})
+    
         po_instance.created_by = request.user
-        po_instance.save()
+        try:
+            po_instance.save()
+        except:
+            messages.error(request, "Error, purchase order not created!")
+            return render(request, 'purchase/createPurchase.html', {'sb':5, 'product':product, 'seller':seller})
         
         for i in range(int(total_product)):
             pod_instance = PurchaseOrderDescription()
-            inventory_product = Product.objects.get(
-                pk=request.POST[f'select_products_{i}']
-            )
-            pod_instance.item = inventory_product
+            try:
+                inventory_product = Product.objects.get(
+                    pk=request.POST[f'select_products_{i}']
+                )
+                pod_instance.item = inventory_product
+            except:
+                messages.error(request, "Product not found!")
+                po_instance.delete()
+                return render(request, 'purchase/createPurchase.html', {'sb':5, 'product':product, 'seller':seller})
+
             pod_instance.purchase_order = po_instance
             pod_instance.qty = request.POST[f'qty_{i}']
             pod_instance.cost_price = request.POST[f'cost_price_{i}']
-            pod_instance.save()
-            inventory_product.qty += int(pod_instance.qty)
-            inventory_product.save()
+            try:
+                pod_instance.save()
+            except:
+                po_instance.delete()
+                messages.error(request, "Error while adding items, purchase order not created!")
+                return render(request, 'purchase/createPurchase.html', {'sb':5, 'product':product, 'seller':seller})
         
-        return redirect('purchase:view-purchase', po_instance.id)
+        try:
+            # Update the Quantity in the Inventory model --> Product table
+            po = PurchaseOrder.objects.get(pk=po_instance.id)
+            for pod in po.product.all():
+                inventory_product = Product.objects.get(pk=pod.item.id)
+                inventory_product.qty += int(pod.qty)
+                inventory_product.save()
+                messages.success(request, "Purchase order created successfully.")
+        except:
+            messages.error(request, "Error occured while updating quantity!!")
+        finally:
+            return redirect('purchase:view-purchase', po_instance.id)
     return render(request, 'purchase/createPurchase.html', {'sb':5, 'product':product, 'seller':seller})

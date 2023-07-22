@@ -6,7 +6,7 @@ from django.conf import settings
 
 
 class PurchaseOrder(models.Model):
-    seller = models.ForeignKey(Seller, default=1, on_delete=models.SET_DEFAULT)
+    seller = models.ForeignKey(Seller, default=1, on_delete=models.PROTECT)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='created_by_user', default=1,  on_delete=models.SET_DEFAULT)
@@ -21,4 +21,4 @@ class PurchaseOrderDescription(models.Model):
     cost_price = models.FloatField()
     
     def __str__(self):
-        return self.product.name
+        return self.item.name

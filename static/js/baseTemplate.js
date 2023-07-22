@@ -74,6 +74,8 @@ $(document).ready(function () {
       $('.collapse.in').toggleClass('in');
       $('a[aria-expanded=true]').attr('aria-expanded', 'false');
   });
+
+  $('.toast').toast('show');
   
   // inventory/inventory.html -- Buttons on Inventory to switch 
   //                             between GRID and TILE view

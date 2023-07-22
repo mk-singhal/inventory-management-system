@@ -22,18 +22,18 @@ class SaleOrder(models.Model):
     )
     gst_sale_type = models.CharField(max_length=10,choices=GSTSaleType,default=1)
    
-    reg_bill_to = models.ForeignKey(Customer, on_delete=models.SET(get_del_customer), blank=True, null=True)
+    reg_bill_to = models.ForeignKey(Customer, on_delete=models.PROTECT, blank=True, null=True)
     
     unreg_bill_to_name = models.CharField(max_length=50, blank=True, null=True)
     unreg_bill_to_address1 = models.CharField(max_length=50, blank=True, null=True)
     unreg_bill_to_address2 = models.CharField(max_length=50, blank=True, null=True)
-    unreg_bill_to_state = models.ForeignKey(State, related_name='bill_to_sale_order', default=1, on_delete=models.SET_DEFAULT, blank=True, null=True)
+    unreg_bill_to_state = models.ForeignKey(State, related_name='bill_to_sale_order', default=1, on_delete=models.PROTECT, blank=True, null=True)
     
     ship_to_name = models.CharField(max_length=50, null=True, blank=True)
     ship_to_address1 = models.CharField(max_length=50, null=True, blank=True)
     ship_to_address2 = models.CharField(max_length=50, null=True, blank=True)
     reg_ship_to_gstin = models.CharField(max_length=50, null=True, blank=True)
-    unreg_ship_to_state = models.ForeignKey(State, related_name='ship_to_sale_order', default=1, on_delete=models.SET_DEFAULT, null=True, blank=True)
+    unreg_ship_to_state = models.ForeignKey(State, related_name='ship_to_sale_order', default=1, on_delete=models.PROTECT, null=True, blank=True)
 
     transport_name = models.CharField(max_length=50, null=True, blank=True)
     transport_id = models.CharField(max_length=50, null=True, blank=True)

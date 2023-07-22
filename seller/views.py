@@ -3,8 +3,9 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect, HttpResponse
 from .models import Seller
 from django.core.paginator import Paginator
-from django.db.models import Q 
+from django.db.models import Q, ProtectedError
 from django.db.models.functions import Lower
+from django.contrib import messages
 
 
 # Create your views here.
@@ -45,14 +46,22 @@ def add_seller(request):
             instance.email = request.POST['email']
         if bool(request.FILES.get('pic', False)) == True:
             instance.pic = request.FILES['pic']
-        instance.save()
-        return redirect('seller:seller')
+        try:
+            instance.save()
+            messages.success(request, "Seller added successfully.")
+            return redirect('seller:seller')
+        except:
+            messages.error(request, "Error, seller not added!")
     return render(request, 'seller/addSeller.html', {'sb':6})
 
 def edit_seller(request, seller_id):
     if seller_id == 1:
       raise Http404
-    seller_instance = get_object_or_404(Seller, pk=seller_id)
+    try:
+        seller_instance = Seller.objects.get(pk=seller_id)
+    except:
+        messages.error(request, "Seller not found!")
+        return redirect('seller:seller')
     
     if request.method == 'POST':
         seller_instance.name = request.POST['name']
@@ -65,16 +74,35 @@ def edit_seller(request, seller_id):
         seller_instance.email = request.POST['email']
         if bool(request.FILES.get('pic', False)) == True:
             seller_instance.pic = request.FILES['pic']
-        seller_instance.save()
-        return redirect('seller:seller')
+        try:
+            seller_instance.save()
+            messages.success(request, "Edits successfull.")
+            return redirect('seller:seller')
+        except:
+            messages.error(request, "Error while editing the seller!")
     return render(request, 'seller/editSeller.html', {'sb':6, 'seller':seller_instance})
 
 def del_seller(request, seller_id):
     if seller_id == 1:
-      raise Http404
-    seller_instance = get_object_or_404(Seller, pk=seller_id)
-    seller_instance.delete()
-    return redirect('seller:seller')
+        messages.error(request, "Access Restricted!!")
+        return redirect('seller:seller')
+    
+    try:
+        seller_instance = get_object_or_404(Seller, pk=seller_id)
+    except:
+        messages.error(request, "Seller not found!")
+        return redirect('seller:seller')
+
+    try:
+        seller_instance.delete()
+        messages.success(request, "Seller successfully removed.")
+    except ProtectedError:
+        messages.error(request, "Seller can't be deleted!!")
+    except:
+        messages.error(request, "Error while removing the seller!")
+    finally:
+        return redirect('seller:seller')
+
 
 def get_seller(request, seller_id):
     seller = Seller.objects.get(pk=seller_id)

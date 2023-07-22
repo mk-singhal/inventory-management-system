@@ -6,16 +6,25 @@ from inventory.models import Product
 from customer.models import Customer
 from django.core.paginator import Paginator
 from django.db.models import Q, F  # New
-from babel.numbers import format_currency
+from django.contrib import messages
 
 
 # Create your views here.
 def sale(request):
     if request.method == "POST":
-        so = SaleOrder.objects.get(pk = request.POST['orderID'])
+        try:
+            so = SaleOrder.objects.get(pk = request.POST['orderID'])
+        except:
+            messages.error(request, "Error while fetching the sale order!")
+            return redirect('sale:sale')
         so.amount_paid = request.POST['amtPaid']
-        so.save()
-        return redirect('sale:sale')
+        try:
+            so.save()
+            messages.success(request, "Amount paid Updated")
+        except:
+            messages.error(request, "Error while updating the amount paid!")
+        finally:
+            return redirect('sale:sale')
     
     sale_orders = SaleOrder.objects.all()
     
@@ -105,7 +114,12 @@ def sale(request):
 
 # Create your views here.
 def view_sale(request, sale_order_id):
-    so = SaleOrder.objects.get(pk=sale_order_id)
+    try:
+        so = SaleOrder.objects.get(pk=sale_order_id)
+    except:
+        messages.error(request, "Sale-Order not found!")
+        return redirect('sale:sale')
+    
     total_taxable_value = 0
     total_halfgst_value = 0
     total_fullgst_value = 0
@@ -160,15 +174,38 @@ def create_sale(request):
         so_instance.created_by = request.user
         
         if request.POST['customer_registered'] == 'yes':
-            customer_id = request.POST['select_customer']
-            so_instance.reg_bill_to = Customer.objects.get(pk=customer_id)
+            try: 
+                so_instance.reg_bill_to = Customer.objects.get(pk=request.POST['select_customer'])
+            except: 
+                messages.error(request, "Customer not Found!!")
+                return render(request, 'sale/createSale.html', 
+                    {'sb':3, 
+                        'product':product, 
+                        'customer':customer, 
+                        'state':state, 
+                        'sale_choices':sale_choices,
+                        'invoice_number':invoice_number,
+                    }
+                )
             if request.POST['ship_to_gstin'] != '': so_instance.reg_ship_to_gstin = request.POST['ship_to_gstin']
         else:
             so_instance.unreg_bill_to_name = request.POST['bill_to_name']
             so_instance.unreg_bill_to_address1 = request.POST['bill_to_add1']
             so_instance.unreg_bill_to_address2 = request.POST['bill_to_add2']
-            so_instance.unreg_bill_to_state = State.objects.get(pk=request.POST['bill_to_state'])
-            so_instance.unreg_ship_to_state = State.objects.get(pk=request.POST['ship_to_state'])
+            try:
+                so_instance.unreg_bill_to_state = State.objects.get(pk=request.POST['bill_to_state'])
+                so_instance.unreg_ship_to_state = State.objects.get(pk=request.POST['ship_to_state'])
+            except:
+                messages.error(request, "State not found!!")
+                return render(request, 'sale/createSale.html', 
+                    {'sb':3, 
+                        'product':product, 
+                        'customer':customer, 
+                        'state':state, 
+                        'sale_choices':sale_choices,
+                        'invoice_number':invoice_number,
+                    }
+                )
 
         so_instance.ship_to_name = request.POST['ship_to_name']
         so_instance.ship_to_address1 = request.POST['ship_to_add1']
@@ -178,17 +215,42 @@ def create_sale(request):
         if request.POST['transport_mode'] != '': so_instance.transport_mode = request.POST['transport_mode']
         if request.POST['transport_vehicle'] != '': so_instance.transport_veh_no = request.POST['transport_vehicle']
         if request.POST['transport_gstin'] != '': so_instance.transport_gstin = request.POST['transport_gstin']
-        
-        so_instance.save()
+        try:
+            so_instance.save()
+        except:
+            # messages.error(request, "Error, sale order not created!")
+            messages.error(request, "Error, sale order not created!")
+            return render(request, 'sale/createSale.html', 
+                    {'sb':3, 
+                        'product':product, 
+                        'customer':customer, 
+                        'state':state, 
+                        'sale_choices':sale_choices,
+                        'invoice_number':invoice_number,
+                    }
+                )
         total_product = request.POST['total_product']
         total_order_price = 0
         
         for i in range(int(total_product)):
             sod_instance = SaleOrderDescription()
-            inventory_product = Product.objects.get(
-                pk=request.POST[f'select_products_{i}']
-            )
-            sod_instance.item = inventory_product
+            try:
+                inventory_product = Product.objects.get(
+                    pk=request.POST[f'select_products_{i}']
+                )
+                sod_instance.item = inventory_product
+            except:
+                messages.error(request, "Product not found!")
+                so_instance.delete()
+                return render(request, 'sale/createSale.html', 
+                    {'sb':3, 
+                        'product':product, 
+                        'customer':customer, 
+                        'state':state, 
+                        'sale_choices':sale_choices,
+                        'invoice_number':invoice_number,
+                    }
+                )
             sod_instance.sale_order = so_instance
             sod_instance.qty = int(request.POST[f'sale_qty_{i}'])
             sod_instance.sell_price = float(request.POST[f'sale_rate_{i}'])
@@ -197,13 +259,39 @@ def create_sale(request):
             sod_instance.gst_value = round(( (sod_instance.item.gst*0.01)*(sod_instance.qty*sod_instance.sell_price) ), 2)
             sod_instance.product_price = round(( (sod_instance.qty*sod_instance.sell_price)*(1-sod_instance.discount*0.01)*(1+sod_instance.item.gst*0.01) ), 2)
             total_order_price += sod_instance.product_price
-            sod_instance.save()
-            inventory_product.qty -= sod_instance.qty
-            inventory_product.save()
+            try:
+                sod_instance.save()
+            except:
+                so_instance.delete()
+                messages.error(request, "Error while adding items, sale order not created!")
+                return render(request, 'sale/createSale.html', 
+                    {'sb':3, 
+                        'product':product, 
+                        'customer':customer, 
+                        'state':state, 
+                        'sale_choices':sale_choices,
+                        'invoice_number':invoice_number,
+                    }
+                )
+        
+        try:
+            # Update the Quantity in the Inventory model --> Product table
+            so = SaleOrder.objects.get(pk=so_instance.id)
+            for sod in so.sale_product.all():
+                inventory_product = Product.objects.get(pk=sod.item.id)
+                inventory_product.qty -= int(sod.qty)
+                inventory_product.save()
+        except:
+            messages.error(request, "Error occured while updating quantity!!")
 
-        so_instance.order_price = total_order_price
-        so_instance.save()
-        return redirect('sale:view-sale', so_instance.id)
+        try:
+            # Update the Order Price in the Inventory model
+            so_instance.order_price = total_order_price
+            so_instance.save()
+            messages.success(request, "Sale order created successfully.")
+            return redirect('sale:view-sale', so_instance.id)
+        except:
+            messages.error(request, "Error in calculation of order price!")
     return render(request, 'sale/createSale.html', 
                   {'sb':3, 
                    'product':product, 

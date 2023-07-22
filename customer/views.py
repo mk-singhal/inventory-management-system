@@ -3,8 +3,9 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect, HttpResponse
 from .models import Customer
 from django.core.paginator import Paginator
-from django.db.models import Q 
+from django.db.models import Q, ProtectedError
 from django.db.models.functions import Lower
+from django.contrib import messages
 
 
 # Create your views here.
@@ -44,48 +45,66 @@ def add_customer(request):
             instance.email = request.POST['email']
         if bool(request.FILES.get('pic', False)) == True:
             instance.pic = request.FILES['pic']
-        instance.save()
-        return redirect('customer:customer')
+        try:
+            instance.save()
+            messages.success(request, "Customer added successfully.")
+            return redirect('customer:customer')
+        except:
+            messages.error(request, "Error, customer not added!")
     return render(request, 'customer/addCustomer.html', {'sb':4})
 
 def edit_customer(request, customer_id):
     if customer_id == 1:
         raise Http404
-    customer_instance = get_object_or_404(Customer, pk=customer_id)
+    try:
+        customer_instance = Customer.objects.get(pk=customer_id)
+    except:
+        messages.error(request, "Customer not found!")
+        return redirect('customer:customer')
     
     if request.method == 'POST':
-        
         if (request.POST['name'] != ''):
             customer_instance.name = request.POST['name']
-
         if (request.POST['gstin'] != ''):
             customer_instance.gstin = request.POST['gstin']
-
         if (request.POST['mob_no'] != ''):
             customer_instance.mob_no = request.POST['mob_no']
-            
         if (request.POST['address1'] != ''):
             customer_instance.address1 = request.POST['address1']
-            
         if (request.POST['address2'] != ''):
             customer_instance.address2 = request.POST['address2']
-            
         if (request.POST['email'] != ''):
             customer_instance.email = request.POST['email']
-            
         if bool(request.FILES.get('pic', False)) == True:
             customer_instance.pic = request.FILES['pic']
-        
-        customer_instance.save()
-        return redirect('customer:customer')
+        try:
+            customer_instance.save()
+            messages.success(request, "Edits successfull.")
+            return redirect('customer:customer')
+        except:
+            messages.error(request, "Error while editing the customer!")
     return render(request, 'customer/editCustomer.html', {'sb':4, 'customer':customer_instance})
 
 def del_customer(request, customer_id):
     if customer_id == 1:
-        raise Http404
-    customer_instance = get_object_or_404(Customer, pk=customer_id)
-    customer_instance.delete()
-    return redirect('customer:customer')
+        messages.error(request, "Access Restricted!!")
+        return redirect('customer:customer')
+    
+    try:
+        customer_instance = Customer.objects.get(pk=customer_id)
+    except:
+        messages.error(request, "Customer not found!")
+        return redirect('customer:customer')
+    
+    try:
+        customer_instance.delete()
+        messages.success(request, "Customer successfully removed.")
+    except ProtectedError:
+        messages.error(request, "Customer can't be deleted!!")
+    except:
+        messages.error(request, "Error while removing the customer!")
+    finally:
+        return redirect('customer:customer')
 
 def get_customer(request, customer_id):
     customer = Customer.objects.get(pk=customer_id)
